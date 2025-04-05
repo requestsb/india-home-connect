@@ -41,6 +41,11 @@ const SupplierDashboardPage: React.FC = () => {
     }, 1000);
   };
 
+  const handleCartClick = () => {
+    // We'll navigate to cart page when it exists
+    alert('Cart page will be implemented soon');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <SupplierNavbar />
@@ -102,7 +107,7 @@ const SupplierDashboardPage: React.FC = () => {
               </DialogContent>
             </Dialog>
             
-            <Button variant="outline" className="relative" size={isMobile ? "sm" : "default"}>
+            <Button variant="outline" className="relative" size={isMobile ? "sm" : "default"} onClick={handleCartClick}>
               <ShoppingCart className="h-4 w-4 mr-2" /> 
               Cart
               <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -112,7 +117,7 @@ const SupplierDashboardPage: React.FC = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatsCard 
             title="Matching Requests" 
             value="12"
