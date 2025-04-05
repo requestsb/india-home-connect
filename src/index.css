@@ -14,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 215 70% 33%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 31.8 81.5% 60.2%;
+    --secondary: 152 55% 34%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
@@ -46,33 +46,7 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 31.8 81.5% 60.2%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* ... keep existing code */
   }
 }
 
@@ -82,7 +56,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-slate-50 text-foreground font-sans;
   }
 }
 
@@ -92,7 +66,11 @@
   }
 
   .btn-secondary {
-    @apply bg-brand-orange hover:bg-amber-500 text-white px-6 py-2 rounded-md transition-colors;
+    @apply bg-brand-green hover:bg-brand-green/90 text-white px-6 py-2 rounded-md transition-colors;
+  }
+
+  .btn-accent {
+    @apply bg-brand-orange hover:bg-brand-warmAccent text-white px-6 py-2 rounded-md transition-colors;
   }
 
   .input-field {
@@ -101,5 +79,9 @@
 
   .card-shadow {
     @apply shadow-md hover:shadow-lg transition-shadow;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-br from-brand-lightBlue to-brand-lightGreen;
   }
 }

@@ -1,19 +1,115 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import SupplierNavbar from '@/components/layout/SupplierNavbar';
 import MaskedRequests from '@/components/supplier/MaskedRequests';
 import PurchasedLeadsTable from '@/components/supplier/PurchasedLeadsTable';
 import StatsCard from '@/components/dashboard/StatsCard';
-import { FileText, Users, Building, DollarSign, Percent } from 'lucide-react';
+import { FileText, Users, Building, Wallet, Percent, Plus, ShoppingCart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
 
 const SupplierDashboardPage: React.FC = () => {
+  const { toast } = useToast();
+  const [walletBalance, setWalletBalance] = useState(5000);
+  const [addAmount, setAddAmount] = useState('');
+  
+  const handleAddToWallet = () => {
+    const amount = parseFloat(addAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: "Invalid amount",
+        description: "Please enter a valid amount to add to your wallet.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Simulate API call
+    setTimeout(() => {
+      setWalletBalance(prevBalance => prevBalance + amount);
+      setAddAmount('');
+      toast({
+        title: "Amount added successfully",
+        description: `₹${amount} has been added to your wallet.`,
+      });
+    }, 1000);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <SupplierNavbar />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Supplier Dashboard</h1>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <h1 className="text-3xl font-bold text-brand-darkBlue">Supplier Dashboard</h1>
+          
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+            <Card className="flex items-center px-4 py-2 gap-2 bg-white">
+              <Wallet className="h-5 w-5 text-brand-blue" />
+              <div>
+                <p className="text-sm text-muted-foreground">Wallet Balance</p>
+                <p className="font-semibold">₹{walletBalance.toLocaleString()}</p>
+              </div>
+            </Card>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-brand-blue hover:bg-brand-darkBlue">
+                  <Plus className="h-4 w-4 mr-2" /> Add Money
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Money to Wallet</DialogTitle>
+                  <DialogDescription>
+                    Enter the amount you would like to add to your wallet.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="amount" className="text-sm font-medium">Amount (₹)</label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder="1000"
+                      value={addAmount}
+                      onChange={(e) => setAddAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[500, 1000, 5000, 10000].map((amount) => (
+                      <Button 
+                        key={amount} 
+                        variant="outline" 
+                        onClick={() => setAddAmount(amount.toString())}
+                        className="flex-1"
+                      >
+                        ₹{amount}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <DialogFooter className="mt-4">
+                  <Button onClick={handleAddToWallet} className="bg-brand-green hover:bg-brand-green/90">
+                    Add to Wallet
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            
+            <Button variant="outline" className="relative">
+              <ShoppingCart className="h-4 w-4 mr-2" /> 
+              Cart
+              <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                3
+              </span>
+            </Button>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <StatsCard 
@@ -34,9 +130,9 @@ const SupplierDashboardPage: React.FC = () => {
             icon={<Percent className="h-4 w-4 text-muted-foreground" />}
           />
           <StatsCard 
-            title="Lead Value" 
-            value="₹25,000"
-            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+            title="Properties Listed" 
+            value="8"
+            icon={<Building className="h-4 w-4 text-muted-foreground" />}
           />
         </div>
         

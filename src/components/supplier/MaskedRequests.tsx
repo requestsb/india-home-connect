@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { FileAudio, MapPin, Banknote, SquareAsterisk, ArrowRight } from 'lucide-react';
+import { FileAudio, MapPin, Banknote, SquareAsterisk, ArrowRight, PlusCircle, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface RequestProps {
   id: string;
@@ -17,6 +18,11 @@ interface RequestProps {
   matchScore: number;
   date: string;
   requirements: string;
+  callRecording?: string;
+  userContact: {
+    name: string;
+    phone: string;
+  };
 }
 
 const requests: RequestProps[] = [
@@ -30,6 +36,11 @@ const requests: RequestProps[] = [
     matchScore: 95,
     date: '2 days ago',
     requirements: 'Looking for a property with garden view, 24x7 security, and good connectivity to Eastern Express Highway.',
+    callRecording: 'https://example.com/recording1.mp3',
+    userContact: {
+      name: 'Rajesh S.',
+      phone: '+91 98xxxxxx45',
+    }
   },
   {
     id: '2',
@@ -41,6 +52,11 @@ const requests: RequestProps[] = [
     matchScore: 80,
     date: '5 days ago',
     requirements: 'Need a commercial space with good frontage, parking space, and suitable for retail business.',
+    callRecording: 'https://example.com/recording2.mp3',
+    userContact: {
+      name: 'Amit K.',
+      phone: '+91 87xxxxxx23',
+    }
   },
   {
     id: '3',
@@ -52,12 +68,22 @@ const requests: RequestProps[] = [
     matchScore: 75,
     date: '1 day ago',
     requirements: 'Looking for a furnished apartment with gym and swimming pool in society. Preferred for 2 year lease.',
+    callRecording: 'https://example.com/recording3.mp3',
+    userContact: {
+      name: 'Priya T.',
+      phone: '+91 95xxxxxx78',
+    }
   },
 ];
 
-const RequestCard: React.FC<{ request: RequestProps }> = ({ request }) => {
+const RequestCard: React.FC<{ 
+  request: RequestProps, 
+  isSelected: boolean, 
+  onSelect: (id: string, isSelected: boolean) => void 
+}> = ({ request, isSelected, onSelect }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(false);
 
   const handlePurchaseLead = () => {
     setIsLoading(true);
@@ -65,6 +91,7 @@ const RequestCard: React.FC<{ request: RequestProps }> = ({ request }) => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
+      setIsPurchased(true);
       toast({
         title: 'Lead purchased successfully!',
         description: 'You can now contact the property seeker directly.',
@@ -73,10 +100,18 @@ const RequestCard: React.FC<{ request: RequestProps }> = ({ request }) => {
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 border-l-4 border-l-brand-blue">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{request.propertyType}</CardTitle>
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              id={`select-${request.id}`} 
+              checked={isSelected}
+              onCheckedChange={(checked) => onSelect(request.id, checked as boolean)}
+              className="mr-2"
+            />
+            <CardTitle className="text-lg">{request.propertyType}</CardTitle>
+          </div>
           <Badge className="bg-brand-blue text-white">
             {request.matchScore}% Match
           </Badge>
@@ -110,46 +145,131 @@ const RequestCard: React.FC<{ request: RequestProps }> = ({ request }) => {
               <FileAudio className="h-4 w-4 mr-1" /> Listen to Call Recording
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Voice Recording Preview</DialogTitle>
               <DialogDescription>
-                Listen to a 30-second preview of the buyer's requirements
+                Listen to the full call recording to understand buyer's requirements
               </DialogDescription>
             </DialogHeader>
-            <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center h-24">
-              <p className="text-muted-foreground">Audio player would appear here</p>
+            <div className="space-y-4">
+              <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center h-24">
+                <audio controls className="w-full">
+                  <source src={request.callRecording} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+              
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-2">Contact Information</h4>
+                <p className="text-sm mb-1"><span className="font-medium">Name:</span> {isPurchased ? request.userContact.name : '●●●●● ●.'}</p>
+                <p className="text-sm"><span className="font-medium">Phone:</span> {isPurchased ? request.userContact.phone : '+91 ●●●●●●●●●●'}</p>
+              </div>
             </div>
             <DialogFooter>
-              <Button onClick={handlePurchaseLead} className="bg-brand-orange hover:bg-amber-500">
-                Purchase Full Access
-              </Button>
+              {!isPurchased ? (
+                <Button 
+                  onClick={handlePurchaseLead} 
+                  className="bg-brand-green hover:bg-brand-green/90 text-white"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Processing...' : 'Purchase Full Access'}
+                </Button>
+              ) : (
+                <Button variant="outline" className="text-brand-green">
+                  Contact Buyer
+                </Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        <Button 
-          size="sm" 
-          className="bg-brand-orange hover:bg-amber-500"
-          onClick={handlePurchaseLead}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Processing...' : 'Purchase Lead'} <ArrowRight className="h-4 w-4 ml-1" />
-        </Button>
+        {!isPurchased ? (
+          <Button 
+            size="sm" 
+            className="bg-brand-green hover:bg-brand-green/90 text-white"
+            onClick={handlePurchaseLead}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'Purchase Lead'} <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        ) : (
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="text-brand-green border-brand-green"
+          >
+            Contact Now <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
 };
 
 const MaskedRequests: React.FC = () => {
+  const { toast } = useToast();
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [cartItems, setCartItems] = useState<string[]>([]);
+  
+  const handleSelectLead = (id: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedLeads([...selectedLeads, id]);
+    } else {
+      setSelectedLeads(selectedLeads.filter(leadId => leadId !== id));
+    }
+  };
+  
+  const handleAddToCart = () => {
+    if (selectedLeads.length === 0) {
+      toast({
+        title: "No leads selected",
+        description: "Please select at least one lead to add to cart.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setCartItems([...cartItems, ...selectedLeads]);
+    setSelectedLeads([]);
+    
+    toast({
+      title: `${selectedLeads.length} leads added to cart`,
+      description: "You can purchase them all at once from your cart.",
+    });
+  };
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Matching Requests</h2>
+        <h2 className="text-2xl font-bold text-brand-blue">Matching Requests</h2>
+        <div className="flex gap-3">
+          <Button 
+            onClick={handleAddToCart}
+            disabled={selectedLeads.length === 0} 
+            className="bg-brand-blue hover:bg-brand-darkBlue"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" /> Add to Cart ({selectedLeads.length})
+          </Button>
+          <Button variant="outline" className="relative">
+            <ShoppingCart className="h-4 w-4 mr-2" /> 
+            Cart
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItems.length}
+              </span>
+            )}
+          </Button>
+        </div>
       </div>
       
       {requests.map((request) => (
-        <RequestCard key={request.id} request={request} />
+        <RequestCard 
+          key={request.id} 
+          request={request} 
+          isSelected={selectedLeads.includes(request.id)}
+          onSelect={handleSelectLead}
+        />
       ))}
       
       {requests.length === 0 && (
