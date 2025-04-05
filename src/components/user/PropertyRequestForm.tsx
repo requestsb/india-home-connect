@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type FormData = {
   propertyType: string;
@@ -19,6 +20,7 @@ type FormData = {
 
 const PropertyRequestForm: React.FC = () => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     propertyType: '',
@@ -180,7 +182,7 @@ const PropertyRequestForm: React.FC = () => {
               placeholder="Mention any specific requirements like amenities, possession timeline, etc."
               value={formData.requirements}
               onChange={handleChange}
-              rows={4}
+              rows={isMobile ? 3 : 4}
             />
           </div>
         </CardContent>

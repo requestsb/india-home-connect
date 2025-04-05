@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FileAudio, MapPin, Banknote, SquareAsterisk, ArrowRight, PlusCircle, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface RequestProps {
   id: string;
@@ -76,6 +77,8 @@ const requests: RequestProps[] = [
   },
 ];
 
+const LEAD_PRICE = '₹99';
+
 const RequestCard: React.FC<{ 
   request: RequestProps, 
   isSelected: boolean, 
@@ -84,6 +87,7 @@ const RequestCard: React.FC<{
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
+  const isMobile = useIsMobile();
 
   const handlePurchaseLead = () => {
     setIsLoading(true);
@@ -138,11 +142,11 @@ const RequestCard: React.FC<{
           "{request.requirements}"
         </p>
       </CardContent>
-      <CardFooter className="pt-2 flex justify-between">
+      <CardFooter className="pt-2 flex flex-wrap justify-between">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center">
-              <FileAudio className="h-4 w-4 mr-1" /> Listen to Call Recording
+            <Button variant="outline" size="sm" className="flex items-center mb-2 sm:mb-0">
+              <FileAudio className="h-4 w-4 mr-1" /> Listen to Call
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
@@ -173,7 +177,7 @@ const RequestCard: React.FC<{
                   className="bg-brand-green hover:bg-brand-green/90 text-white"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Processing...' : 'Purchase Full Access'}
+                  {isLoading ? 'Processing...' : `Purchase Full Access (${LEAD_PRICE})`}
                 </Button>
               ) : (
                 <Button variant="outline" className="text-brand-green">
@@ -191,7 +195,7 @@ const RequestCard: React.FC<{
             onClick={handlePurchaseLead}
             disabled={isLoading}
           >
-            {isLoading ? 'Processing...' : 'Purchase Lead'} <ArrowRight className="h-4 w-4 ml-1" />
+            {isLoading ? 'Processing...' : `Purchase Lead (${LEAD_PRICE})`} <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         ) : (
           <Button 
@@ -211,6 +215,7 @@ const MaskedRequests: React.FC = () => {
   const { toast } = useToast();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [cartItems, setCartItems] = useState<string[]>([]);
+  const isMobile = useIsMobile();
   
   const handleSelectLead = (id: string, isSelected: boolean) => {
     if (isSelected) {
@@ -241,17 +246,22 @@ const MaskedRequests: React.FC = () => {
   
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
         <h2 className="text-2xl font-bold text-brand-blue">Matching Requests</h2>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Button 
             onClick={handleAddToCart}
             disabled={selectedLeads.length === 0} 
             className="bg-brand-blue hover:bg-brand-darkBlue"
+            size={isMobile ? "sm" : "default"}
           >
             <PlusCircle className="h-4 w-4 mr-2" /> Add to Cart ({selectedLeads.length})
           </Button>
-          <Button variant="outline" className="relative">
+          <Button 
+            variant="outline" 
+            className="relative"
+            size={isMobile ? "sm" : "default"}
+          >
             <ShoppingCart className="h-4 w-4 mr-2" /> 
             Cart
             {cartItems.length > 0 && (
