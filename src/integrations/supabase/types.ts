@@ -9,7 +9,102 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      localities: {
+        Row: {
+          city: string
+          id: number
+          locality: string
+        }
+        Insert: {
+          city: string
+          id?: number
+          locality: string
+        }
+        Update: {
+          city?: string
+          id?: number
+          locality?: string
+        }
+        Relationships: []
+      }
+      property: {
+        Row: {
+          amenities: string[] | null
+          Bathrooms: number | null
+          bedrooms: string | null
+          city: string | null
+          "Covered Area (sq.ft)": number | null
+          created_at: string
+          description: string | null
+          facing: string | null
+          "Floor Number": number | null
+          furnishing: string | null
+          id: number
+          listing_type: string | null
+          locality: string | null
+          ownership: string | null
+          "Possession Status": string | null
+          price: number | null
+          "Property Type": string | null
+          property_category: string | null
+          sale_type: string | null
+          sub_property_type: string | null
+          title: string | null
+          "Total Floors": number | null
+          user_id: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          Bathrooms?: number | null
+          bedrooms?: string | null
+          city?: string | null
+          "Covered Area (sq.ft)"?: number | null
+          created_at?: string
+          description?: string | null
+          facing?: string | null
+          "Floor Number"?: number | null
+          furnishing?: string | null
+          id?: number
+          listing_type?: string | null
+          locality?: string | null
+          ownership?: string | null
+          "Possession Status"?: string | null
+          price?: number | null
+          "Property Type"?: string | null
+          property_category?: string | null
+          sale_type?: string | null
+          sub_property_type?: string | null
+          title?: string | null
+          "Total Floors"?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          Bathrooms?: number | null
+          bedrooms?: string | null
+          city?: string | null
+          "Covered Area (sq.ft)"?: number | null
+          created_at?: string
+          description?: string | null
+          facing?: string | null
+          "Floor Number"?: number | null
+          furnishing?: string | null
+          id?: number
+          listing_type?: string | null
+          locality?: string | null
+          ownership?: string | null
+          "Possession Status"?: string | null
+          price?: number | null
+          "Property Type"?: string | null
+          property_category?: string | null
+          sale_type?: string | null
+          sub_property_type?: string | null
+          title?: string | null
+          "Total Floors"?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
