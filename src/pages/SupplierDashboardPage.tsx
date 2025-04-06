@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import SupplierNavbar from '@/components/layout/SupplierNavbar';
 import MaskedRequests from '@/components/supplier/MaskedRequests';
 import PurchasedLeadsTable from '@/components/supplier/PurchasedLeadsTable';
-import PropertyListingForm from '@/components/supplier/PropertyListingForm';
+import SupabasePropertyForm from '@/components/supplier/SupabasePropertyForm';
 import StatsCard from '@/components/dashboard/StatsCard';
 import { FileText, Users, Building, Wallet, Percent, Plus, ShoppingCart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -186,7 +185,7 @@ const SupplierDashboardPage: React.FC = () => {
           <TabsContent value="list-property">
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold text-brand-darkBlue mb-6">List Your Property</h2>
-              <PropertyListingForm />
+              <SupabasePropertyForm />
             </div>
           </TabsContent>
         </Tabs>

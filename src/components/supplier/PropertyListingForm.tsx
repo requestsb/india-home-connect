@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp, Info, Plus } from 'lucide-react';
 
-type PropertyListingFormValues = {
+export type PropertyListingFormValues = {
   title: string;
   description: string;
   propertyType: string;
@@ -40,6 +39,11 @@ type PropertyListingFormValues = {
   facing: string;
   amenities: string[];
 };
+
+interface PropertyListingFormProps {
+  onExternalSubmit?: (data: PropertyListingFormValues) => void;
+  isExternalSubmitting?: boolean;
+}
 
 const cities = [
   'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 
@@ -105,11 +109,15 @@ const possessionOptions = [
   'Available in 6 Months'
 ];
 
-const PropertyListingForm: React.FC = () => {
+const PropertyListingForm: React.FC<PropertyListingFormProps> = ({ 
+  onExternalSubmit,
+  isExternalSubmitting = false
+}) => {
   const { toast } = useToast();
   const [listingType, setListingType] = useState<'buy' | 'rent'>('buy');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PropertyListingFormValues>({
     defaultValues: {
@@ -135,20 +143,27 @@ const PropertyListingForm: React.FC = () => {
   });
 
   const onSubmit = (data: PropertyListingFormValues) => {
-    console.log(data);
-    
-    // Add the selected amenities to the form data
     const formData = { ...data, amenities: selectedAmenities };
     
-    toast({
-      title: "Property Listed Successfully",
-      description: "Your property has been listed and will be visible to potential buyers/tenants.",
-      variant: "default",
-    });
-    
-    // Reset form after submission
-    form.reset();
-    setSelectedAmenities([]);
+    if (onExternalSubmit) {
+      onExternalSubmit(formData);
+    } else {
+      setIsSubmitting(true);
+      
+      console.log(formData);
+      
+      setTimeout(() => {
+        setIsSubmitting(false);
+        toast({
+          title: "Property Listed Successfully",
+          description: "Your property has been listed and will be visible to potential buyers/tenants.",
+          variant: "default",
+        });
+        
+        form.reset();
+        setSelectedAmenities([]);
+      }, 1500);
+    }
   };
 
   const toggleAmenity = (amenity: string) => {
@@ -163,6 +178,8 @@ const PropertyListingForm: React.FC = () => {
     setListingType(value);
     form.setValue('listingType', value);
   };
+
+  const submissionInProgress = isExternalSubmitting || isSubmitting;
 
   return (
     <Form {...form}>
@@ -621,14 +638,22 @@ const PropertyListingForm: React.FC = () => {
             variant="outline"
             className="flex items-center gap-1"
             onClick={() => form.reset()}
+            disabled={submissionInProgress}
           >
             Reset Form
           </Button>
           <Button 
             type="submit" 
             className="bg-gradient-to-r from-brand-blue to-brand-darkBlue hover:opacity-90 transition-all duration-300 shadow-md"
+            disabled={submissionInProgress}
           >
-            <Plus className="h-4 w-4 mr-2" /> List Property
+            {submissionInProgress ? (
+              "Submitting..."
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" /> List Property
+              </>
+            )}
           </Button>
         </div>
       </form>
