@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +18,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronUp, Info, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, Plus, RotateCcw } from 'lucide-react';
 
 export type PropertyListingFormValues = {
   title: string;
@@ -37,6 +38,7 @@ export type PropertyListingFormValues = {
   furnishing: string;
   bathrooms: string;
   facing: string;
+  bedrooms: string;
   amenities: string[];
 };
 
@@ -50,6 +52,20 @@ const cities = [
   'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow'
 ];
 
+// Map of cities to their localities
+const cityLocalities = {
+  'Mumbai': ['Andheri', 'Bandra', 'Juhu', 'Colaba', 'Worli', 'Powai', 'Malad'],
+  'Delhi': ['Connaught Place', 'Dwarka', 'Hauz Khas', 'Lajpat Nagar', 'Rohini', 'Saket'],
+  'Bangalore': ['Koramangala', 'Indiranagar', 'Whitefield', 'JP Nagar', 'Marathahalli', 'HSR Layout'],
+  'Hyderabad': ['Banjara Hills', 'Jubilee Hills', 'Gachibowli', 'Madhapur', 'Kukatpally', 'Hitec City'],
+  'Chennai': ['Adyar', 'Anna Nagar', 'T. Nagar', 'Velachery', 'Besant Nagar', 'Mylapore'],
+  'Kolkata': ['Park Street', 'Salt Lake', 'New Town', 'Ballygunge', 'Alipore', 'Jadavpur'],
+  'Pune': ['Koregaon Park', 'Viman Nagar', 'Kharadi', 'Baner', 'Aundh', 'Magarpatta'],
+  'Ahmedabad': ['Navrangpura', 'Bodakdev', 'Satellite', 'Prahlad Nagar', 'Vastrapur', 'Thaltej'],
+  'Jaipur': ['Malviya Nagar', 'C Scheme', 'Vaishali Nagar', 'Mansarovar', 'Jagatpura', 'Raja Park'],
+  'Lucknow': ['Gomti Nagar', 'Hazratganj', 'Indira Nagar', 'Aliganj', 'Jankipuram', 'Mahanagar']
+};
+
 const subPropertyTypes = [
   'Multistorey Apartment',
   'Builder Floor Apartment',
@@ -57,6 +73,15 @@ const subPropertyTypes = [
   'Studio Apartment',
   'Residential House',
   'Villa'
+];
+
+const bedroomOptions = [
+  '1 RK',
+  '1 BHK',
+  '2 BHK',
+  '3 BHK',
+  '4 BHK',
+  '5+ BHK'
 ];
 
 const saleTypes = ['New', 'Resale'];
@@ -118,6 +143,9 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [availableLocalities, setAvailableLocalities] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const form = useForm<PropertyListingFormValues>({
     defaultValues: {
@@ -138,9 +166,29 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
       furnishing: '',
       bathrooms: '',
       facing: '',
+      bedrooms: '',
       amenities: [],
     },
   });
+
+  // Update localities when city changes
+  useEffect(() => {
+    if (selectedCity && cityLocalities[selectedCity as keyof typeof cityLocalities]) {
+      setAvailableLocalities(cityLocalities[selectedCity as keyof typeof cityLocalities]);
+      form.setValue('locality', ''); // Reset locality when city changes
+    } else {
+      setAvailableLocalities([]);
+    }
+  }, [selectedCity, form]);
+
+  const handleFormReset = () => {
+    form.reset();
+    setSelectedAmenities([]);
+    setSelectedCategory('');
+    setSelectedCity('');
+    setAvailableLocalities([]);
+    setShowAdvancedOptions(false);
+  };
 
   const onSubmit = (data: PropertyListingFormValues) => {
     const formData = { ...data, amenities: selectedAmenities };
@@ -160,8 +208,7 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
           variant: "default",
         });
         
-        form.reset();
-        setSelectedAmenities([]);
+        handleFormReset();
       }, 1500);
     }
   };
@@ -177,6 +224,19 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
   const handleListingTypeChange = (value: 'buy' | 'rent') => {
     setListingType(value);
     form.setValue('listingType', value);
+    setSelectedCategory('');
+  };
+  
+  const handleCategorySelection = (category: string) => {
+    setSelectedCategory(category);
+    
+    if (category === 'Ready to Move') {
+      form.setValue('possession', 'Ready to Move');
+    } else if (category === 'Furnished Homes') {
+      form.setValue('furnishing', 'Furnished');
+    } else if (category === 'Immediately Available') {
+      form.setValue('possession', 'Immediately Available');
+    }
   };
 
   const submissionInProgress = isExternalSubmitting || isSubmitting;
@@ -210,20 +270,45 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
                 <div className="text-sm text-muted-foreground mb-4">
                   Choose from the following categories for sale properties:
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   {['Ready to Move', 'Owner Properties', 'Budget Homes', 'Premium Homes', 'New Projects'].map((category) => (
                     <Card 
                       key={category} 
-                      className="p-3 cursor-pointer hover:bg-brand-lightBlue/20 transition-colors border border-brand-lightBlue/30"
-                      onClick={() => {
-                        if (category === 'Ready to Move') {
-                          form.setValue('possession', 'Ready to Move');
-                        }
-                      }}
+                      className={`p-3 cursor-pointer transition-colors border ${
+                        selectedCategory === category 
+                          ? 'bg-brand-lightBlue/30 border-brand-blue' 
+                          : 'hover:bg-brand-lightBlue/20 border-brand-lightBlue/30'
+                      }`}
+                      onClick={() => handleCategorySelection(category)}
                     >
                       <div className="text-sm font-medium">{category}</div>
                     </Card>
                   ))}
+                </div>
+                
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="bedrooms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Bedrooms</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="focus:ring-brand-blue/30">
+                              <SelectValue placeholder="Select Bedrooms" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {bedroomOptions.map((option) => (
+                              <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </TabsContent>
               
@@ -231,22 +316,45 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
                 <div className="text-sm text-muted-foreground mb-4">
                   Choose from the following categories for rental properties:
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   {['Owner Properties', 'Furnished Homes', 'Bachelor Friendly', 'Immediately Available'].map((category) => (
                     <Card 
                       key={category} 
-                      className="p-3 cursor-pointer hover:bg-brand-lightBlue/20 transition-colors border border-brand-lightBlue/30"
-                      onClick={() => {
-                        if (category === 'Furnished Homes') {
-                          form.setValue('furnishing', 'Furnished');
-                        } else if (category === 'Immediately Available') {
-                          form.setValue('possession', 'Immediately Available');
-                        }
-                      }}
+                      className={`p-3 cursor-pointer transition-colors border ${
+                        selectedCategory === category 
+                          ? 'bg-brand-lightBlue/30 border-brand-blue' 
+                          : 'hover:bg-brand-lightBlue/20 border-brand-lightBlue/30'
+                      }`}
+                      onClick={() => handleCategorySelection(category)}
                     >
                       <div className="text-sm font-medium">{category}</div>
                     </Card>
                   ))}
+                </div>
+                
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="bedrooms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Bedrooms</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="focus:ring-brand-blue/30">
+                              <SelectValue placeholder="Select Bedrooms" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {bedroomOptions.map((option) => (
+                              <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </TabsContent>
             </Tabs>
@@ -294,7 +402,13 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>City</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedCity(value);
+                      }} 
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger className="focus:ring-brand-blue/30">
                           <SelectValue placeholder="Select City" />
@@ -317,13 +431,22 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Locality</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="e.g., Malad West" 
-                        {...field} 
-                        className="focus:border-brand-blue focus:ring-brand-blue/30"
-                      />
-                    </FormControl>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      disabled={!selectedCity}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="focus:ring-brand-blue/30">
+                          <SelectValue placeholder={selectedCity ? "Select Locality" : "Select City First"} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availableLocalities.map((locality) => (
+                          <SelectItem key={locality} value={locality}>{locality}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -637,10 +760,10 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
             type="button"
             variant="outline"
             className="flex items-center gap-1"
-            onClick={() => form.reset()}
+            onClick={handleFormReset}
             disabled={submissionInProgress}
           >
-            Reset Form
+            <RotateCcw className="h-4 w-4 mr-1" /> Reset Form
           </Button>
           <Button 
             type="submit" 
