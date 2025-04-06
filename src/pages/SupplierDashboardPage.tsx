@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import SupplierNavbar from '@/components/layout/SupplierNavbar';
 import MaskedRequests from '@/components/supplier/MaskedRequests';
 import PurchasedLeadsTable from '@/components/supplier/PurchasedLeadsTable';
 import SupabasePropertyForm from '@/components/supplier/SupabasePropertyForm';
+import PropertyTable from '@/components/supplier/PropertyTable';
 import StatsCard from '@/components/dashboard/StatsCard';
 import { FileText, Users, Building, Wallet, Percent, Plus, ShoppingCart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,12 +14,42 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 
 const SupplierDashboardPage: React.FC = () => {
   const { toast } = useToast();
   const [walletBalance, setWalletBalance] = useState(5000);
   const [addAmount, setAddAmount] = useState('');
+  const [user, setUser] = useState<any>(null);
   const isMobile = useIsMobile();
+  
+  useEffect(() => {
+    // Check if user is authenticated
+    const checkUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      } else if (error) {
+        console.error('Error getting user:', error);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in to access this page",
+          variant: "destructive",
+        });
+      }
+    };
+
+    checkUser();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [toast]);
   
   const handleAddToWallet = () => {
     const amount = parseFloat(addAmount);
@@ -172,6 +204,12 @@ const SupplierDashboardPage: React.FC = () => {
             >
               List Property
             </TabsTrigger>
+            <TabsTrigger 
+              value="my-properties" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-blue/10 data-[state=active]:to-brand-blue/5 data-[state=active]:text-brand-blue data-[state=active]:shadow-sm"
+            >
+              My Properties
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="matching">
@@ -186,6 +224,13 @@ const SupplierDashboardPage: React.FC = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold text-brand-darkBlue mb-6">List Your Property</h2>
               <SupabasePropertyForm />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="my-properties">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-brand-darkBlue mb-6">My Properties</h2>
+              <PropertyTable />
             </div>
           </TabsContent>
         </Tabs>
