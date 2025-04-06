@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import SupplierNavbar from '@/components/layout/SupplierNavbar';
 import MaskedRequests from '@/components/supplier/MaskedRequests';
 import PurchasedLeadsTable from '@/components/supplier/PurchasedLeadsTable';
+import PropertyListingForm from '@/components/supplier/PropertyListingForm';
 import StatsCard from '@/components/dashboard/StatsCard';
 import { FileText, Users, Building, Wallet, Percent, Plus, ShoppingCart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -133,26 +134,22 @@ const SupplierDashboardPage: React.FC = () => {
             value="12"
             change={{ value: "30%", positive: true }}
             icon={<FileText className="h-4 w-4 text-brand-blue" />}
-            className="bg-gradient-to-br from-white to-brand-lightBlue/30 border-0 shadow-md hover:shadow-lg transition-all duration-300"
           />
           <StatsCard 
             title="Purchased Leads" 
             value="5"
             icon={<Users className="h-4 w-4 text-brand-darkBlue" />}
-            className="bg-gradient-to-br from-white to-brand-lightGreen/30 border-0 shadow-md hover:shadow-lg transition-all duration-300"
           />
           <StatsCard 
             title="Conversion Rate" 
             value="40%"
             change={{ value: "5%", positive: true }}
             icon={<Percent className="h-4 w-4 text-brand-green" />}
-            className="bg-gradient-to-br from-white to-brand-lightBlue/20 border-0 shadow-md hover:shadow-lg transition-all duration-300"
           />
           <StatsCard 
             title="Properties Listed" 
             value="8"
             icon={<Building className="h-4 w-4 text-brand-orange" />}
-            className="bg-gradient-to-br from-white to-brand-lightGreen/20 border-0 shadow-md hover:shadow-lg transition-all duration-300"
           />
         </div>
         
@@ -170,6 +167,12 @@ const SupplierDashboardPage: React.FC = () => {
             >
               Purchased Leads
             </TabsTrigger>
+            <TabsTrigger 
+              value="list-property" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-orange/10 data-[state=active]:to-brand-orange/5 data-[state=active]:text-brand-orange data-[state=active]:shadow-sm"
+            >
+              List Property
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="matching">
@@ -178,6 +181,13 @@ const SupplierDashboardPage: React.FC = () => {
           
           <TabsContent value="purchased">
             <PurchasedLeadsTable />
+          </TabsContent>
+          
+          <TabsContent value="list-property">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-brand-darkBlue mb-6">List Your Property</h2>
+              <PropertyListingForm />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
