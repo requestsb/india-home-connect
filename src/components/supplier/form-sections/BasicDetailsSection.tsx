@@ -4,7 +4,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
-import { PropertyListingFormValues } from '../types/propertyTypes';
+import { PropertyListingFormValues, priceRangeOptions, areaRangeOptions } from '../types/propertyTypes';
 import { cities, cityLocalities } from '../data/propertyOptions';
 
 interface BasicDetailsSectionProps {
@@ -13,6 +13,11 @@ interface BasicDetailsSectionProps {
   selectedCity: string;
   setSelectedCity: (city: string) => void;
   availableLocalities: string[];
+  priceRangeOptions: {
+    buy: string[];
+    rent: string[];
+  };
+  areaRangeOptions: string[];
 }
 
 const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
@@ -20,7 +25,9 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
   listingType,
   selectedCity,
   setSelectedCity,
-  availableLocalities
+  availableLocalities,
+  priceRangeOptions,
+  areaRangeOptions
 }) => {
   return (
     <div className="space-y-6">
@@ -37,6 +44,9 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
                 className="focus:border-brand-blue focus:ring-brand-blue/30"
               />
             </FormControl>
+            <FormDescription>
+              Auto-generated based on bedrooms, locality and city
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -55,6 +65,9 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
                 {...field} 
               />
             </FormControl>
+            <FormDescription>
+              Auto-generated based on property details and amenities
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -118,29 +131,154 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         />
       </div>
 
-      <FormField
-        control={form.control}
-        name="price"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Price (₹)</FormLabel>
-            <FormControl>
-              <Input 
-                type="number" 
-                placeholder={listingType === 'buy' ? "e.g., 5000000" : "e.g., 25000"} 
-                {...field} 
-                className="focus:border-brand-blue focus:ring-brand-blue/30"
-              />
-            </FormControl>
-            <FormDescription>
-              {listingType === 'buy' 
-                ? "Enter the total price of the property" 
-                : "Enter the monthly rent amount"}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price (₹)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder={listingType === 'buy' ? "e.g., 5000000" : "e.g., 25000"} 
+                  {...field} 
+                  className="focus:border-brand-blue focus:ring-brand-blue/30"
+                />
+              </FormControl>
+              <FormDescription>
+                {listingType === 'buy' 
+                  ? "Enter the total price of the property" 
+                  : "Enter the monthly rent amount"}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="priceRange"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price Range</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="focus:ring-brand-blue/30">
+                    <SelectValue placeholder="Select price range" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {listingType === 'buy' ? (
+                    priceRangeOptions.buy.map((range) => (
+                      <SelectItem key={range} value={range}>{range}</SelectItem>
+                    ))
+                  ) : (
+                    priceRangeOptions.rent.map((range) => (
+                      <SelectItem key={range} value={range}>{range}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Select a price range for better matching with buyer requirements
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="coverArea"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Covered Area (sq.ft)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder="e.g., 1200" 
+                  {...field} 
+                  className="focus:border-brand-blue focus:ring-brand-blue/30"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="areaRange"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Area Range</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="focus:ring-brand-blue/30">
+                    <SelectValue placeholder="Select area range" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {areaRangeOptions.map((range) => (
+                    <SelectItem key={range} value={range}>{range}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Select an area range for better matching with buyer requirements
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="space-y-4">
+        <FormField
+          control={form.control}
+          name="seoMetaTitle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SEO Meta Title</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Meta title for search engines" 
+                  {...field} 
+                  className="focus:border-brand-blue focus:ring-brand-blue/30"
+                />
+              </FormControl>
+              <FormDescription>
+                Auto-generated based on property details (for search engine visibility)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="seoMetaDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SEO Meta Description</FormLabel>
+              <FormControl>
+                <textarea 
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 focus:border-brand-blue focus:ring-brand-blue/30 min-h-[80px] resize-y"
+                  placeholder="Meta description for search engines" 
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Auto-generated based on property details and price (for search engine visibility)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
     </div>
   );
 };

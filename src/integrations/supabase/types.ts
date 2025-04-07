@@ -27,6 +27,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          supplier_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          supplier_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          supplier_type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       property: {
         Row: {
           amenities: string[] | null
@@ -49,6 +70,7 @@ export type Database = {
           property_category: string | null
           sale_type: string | null
           sub_property_type: string | null
+          supplier_type: string | null
           title: string | null
           "Total Floors": number | null
           user_id: string | null
@@ -74,6 +96,7 @@ export type Database = {
           property_category?: string | null
           sale_type?: string | null
           sub_property_type?: string | null
+          supplier_type?: string | null
           title?: string | null
           "Total Floors"?: number | null
           user_id?: string | null
@@ -99,6 +122,7 @@ export type Database = {
           property_category?: string | null
           sale_type?: string | null
           sub_property_type?: string | null
+          supplier_type?: string | null
           title?: string | null
           "Total Floors"?: number | null
           user_id?: string | null

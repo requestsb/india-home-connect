@@ -5,14 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useToast } from '@/components/ui/use-toast';
 import { Plus, RotateCcw } from 'lucide-react';
-import { PropertyListingFormValues, PropertyListingFormProps } from './types/propertyTypes';
+import { 
+  PropertyListingFormValues, 
+  priceRangeOptions, 
+  areaRangeOptions,
+  generatePropertyTitle,
+  generatePropertyDescription,
+  generateSeoMetaTitle,
+  generateSeoMetaDescription
+} from './types/propertyTypes';
 import { cityLocalities } from './data/propertyOptions';
 import ListingTypeSelector from './form-sections/ListingTypeSelector';
 import BasicDetailsSection from './form-sections/BasicDetailsSection';
 import PropertyDetailsSection from './form-sections/PropertyDetailsSection';
 import AdvancedDetailsSection from './form-sections/AdvancedDetailsSection';
+import SupplierTypeSelector from './form-sections/SupplierTypeSelector';
 
-const PropertyListingForm: React.FC<PropertyListingFormProps> = ({ 
+const PropertyListingForm: React.FC<{
+  onExternalSubmit?: (data: PropertyListingFormValues) => void;
+  isExternalSubmitting?: boolean;
+}> = ({ 
   onExternalSubmit,
   isExternalSubmitting = false
 }) => {
@@ -33,9 +45,11 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
       subPropertyType: '',
       listingType: 'buy',
       price: '',
+      priceRange: '',
+      coverArea: '',
+      areaRange: '',
       locality: '',
       city: '',
-      coverArea: '',
       floor: '',
       totalFloors: '',
       possession: '',
@@ -46,8 +60,51 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
       facing: '',
       bedrooms: '',
       amenities: [],
+      supplierType: '',
+      seoMetaTitle: '',
+      seoMetaDescription: ''
     },
   });
+
+  // Watch for fields that contribute to auto-generation
+  const watchedBedrooms = form.watch('bedrooms');
+  const watchedLocality = form.watch('locality');
+  const watchedCity = form.watch('city');
+  const watchedPrice = form.watch('price');
+
+  // Auto-generate title, description and SEO tags when dependent fields change
+  useEffect(() => {
+    if (watchedBedrooms && watchedLocality && watchedCity) {
+      // Generate property title
+      const title = generatePropertyTitle(watchedBedrooms, watchedLocality, watchedCity);
+      form.setValue('title', title);
+      
+      // Generate SEO meta title
+      const seoMetaTitle = generateSeoMetaTitle(watchedBedrooms, watchedLocality, watchedCity);
+      form.setValue('seoMetaTitle', seoMetaTitle);
+      
+      // Generate property description and SEO meta description if price is available
+      if (watchedPrice) {
+        const description = generatePropertyDescription(
+          watchedBedrooms, 
+          watchedLocality, 
+          watchedCity, 
+          selectedAmenities,
+          watchedPrice
+        );
+        form.setValue('description', description);
+        
+        const seoMetaDescription = generateSeoMetaDescription(
+          watchedBedrooms, 
+          watchedLocality, 
+          watchedCity, 
+          selectedAmenities,
+          watchedPrice
+        );
+        form.setValue('seoMetaDescription', seoMetaDescription);
+      }
+    }
+  }, [watchedBedrooms, watchedLocality, watchedCity, watchedPrice, selectedAmenities, form]);
 
   // Update localities when city changes
   useEffect(() => {
@@ -59,6 +116,29 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
     }
   }, [selectedCity, form]);
 
+  // Add amenities watcher to update description when amenities change
+  useEffect(() => {
+    if (watchedBedrooms && watchedLocality && watchedCity && watchedPrice) {
+      const description = generatePropertyDescription(
+        watchedBedrooms, 
+        watchedLocality, 
+        watchedCity, 
+        selectedAmenities,
+        watchedPrice
+      );
+      form.setValue('description', description);
+      
+      const seoMetaDescription = generateSeoMetaDescription(
+        watchedBedrooms, 
+        watchedLocality, 
+        watchedCity, 
+        selectedAmenities,
+        watchedPrice
+      );
+      form.setValue('seoMetaDescription', seoMetaDescription);
+    }
+  }, [selectedAmenities, watchedBedrooms, watchedLocality, watchedCity, watchedPrice, form]);
+
   const handleFormReset = () => {
     form.reset();
     setSelectedAmenities([]);
@@ -69,7 +149,10 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
   };
 
   const onSubmit = (data: PropertyListingFormValues) => {
-    const formData = { ...data, amenities: selectedAmenities };
+    const formData = { 
+      ...data, 
+      amenities: selectedAmenities 
+    };
     
     if (onExternalSubmit) {
       onExternalSubmit(formData);
@@ -102,6 +185,8 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
   const handleListingTypeChange = (value: 'buy' | 'rent') => {
     setListingType(value);
     form.setValue('listingType', value);
+    // Reset price range when changing listing type
+    form.setValue('priceRange', '');
     setSelectedCategory('');
   };
   
@@ -132,12 +217,16 @@ const PropertyListingForm: React.FC<PropertyListingFormProps> = ({
               handleCategorySelection={handleCategorySelection}
             />
 
+            <SupplierTypeSelector form={form} />
+
             <BasicDetailsSection 
               form={form}
               listingType={listingType}
               selectedCity={selectedCity}
               setSelectedCity={setSelectedCity}
               availableLocalities={availableLocalities}
+              priceRangeOptions={priceRangeOptions}
+              areaRangeOptions={areaRangeOptions}
             />
           </div>
 

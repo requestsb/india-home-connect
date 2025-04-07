@@ -1,90 +1,71 @@
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { PropertyData } from './types/propertyTypes';
 import { Loader2 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
-
-// Define the property type based on the database schema
-type Property = {
-  id: number;
-  title: string;
-  description: string | null;
-  "Property Type": string | null;
-  sub_property_type: string | null;
-  property_category: string | null;
-  listing_type: string | null;
-  price: number | null;
-  locality: string | null;
-  city: string | null;
-  "Covered Area (sq.ft)": number | null;
-  "Floor Number": number | null;
-  "Total Floors": number | null;
-  "Possession Status": string | null;
-  sale_type: string | null;
-  ownership: string | null;
-  furnishing: string | null;
-  Bathrooms: number | null;
-  facing: string | null;
-  bedrooms: string | null;
-  amenities: string[] | null;
-  created_at: string;
-  user_id: string | null;
-};
-
-// Define the match criteria type
-type MatchCriteria = {
-  key: string;
-  label: string;
-  matched: boolean;
-  value: string | number | null;
-};
 
 const PropertyTable: React.FC = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<PropertyData[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
-  // Example search criteria for matching (in a real app, this would come from user input)
-  const searchCriteria = {
-    "Property Type": "Apartment",
-    city: "Mumbai",
-    bedrooms: "2",
-    price: 5000000, // Max price for buy properties
-    amenities: ["Gym", "Swimming Pool"],
-  };
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
+        // Get the current user's ID
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          setError("You must be logged in to view your properties");
+          setLoading(false);
+          return;
+        }
+        
+        // Fetch properties for the current user
         const { data, error } = await supabase
           .from('property')
-          .select('*');
-
-        if (error) {
-          throw error;
-        }
-
-        if (data) {
-          setProperties(data);
-        }
-      } catch (error: any) {
-        console.error('Error fetching properties:', error);
-        toast({
-          title: "Error fetching properties",
-          description: error.message,
-          variant: "destructive",
-        });
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        
+        // Process data to add match criteria
+        const processedData = data?.map(property => {
+          // This is a simplified example - in a real application, you would compare
+          // against actual search criteria from users
+          const matchCriteria = {
+            matches: [] as string[],
+            nonMatches: [] as string[]
+          };
+          
+          // Simulate some matching logic
+          if (property.bedrooms) matchCriteria.matches.push('Bedrooms');
+          else matchCriteria.nonMatches.push('Bedrooms');
+          
+          if (property.locality) matchCriteria.matches.push('Locality');
+          else matchCriteria.nonMatches.push('Locality');
+          
+          if (property.price && property.price > 0) matchCriteria.matches.push('Price');
+          else matchCriteria.nonMatches.push('Price');
+          
+          if (property["Covered Area (sq.ft)"]) matchCriteria.matches.push('Area');
+          else matchCriteria.nonMatches.push('Area');
+          
+          if (property.amenities && property.amenities.length > 0) matchCriteria.matches.push('Amenities');
+          else matchCriteria.nonMatches.push('Amenities');
+          
+          return {
+            ...property,
+            matchCriteria
+          };
+        }) || [];
+        
+        setProperties(processedData as PropertyData[]);
+      } catch (err: any) {
+        console.error('Error fetching properties:', err);
+        setError(err.message || 'Failed to load properties');
       } finally {
         setLoading(false);
       }
@@ -102,9 +83,9 @@ const PropertyTable: React.FC = () => {
           schema: 'public',
           table: 'property'
         },
-        (payload) => {
-          console.log('Realtime update:', payload);
-          fetchProperties(); // Refetch the data when changes occur
+        () => {
+          // Refresh the data when changes occur
+          fetchProperties();
         }
       )
       .subscribe();
@@ -112,146 +93,77 @@ const PropertyTable: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [toast]);
-
-  // Function to evaluate match criteria for a property
-  const evaluateMatchCriteria = (property: Property): MatchCriteria[] => {
-    const criteria: MatchCriteria[] = [];
-
-    // Check Property Type match
-    criteria.push({
-      key: "propertyType",
-      label: "Property Type",
-      matched: property["Property Type"] === searchCriteria["Property Type"],
-      value: property["Property Type"],
-    });
-
-    // Check city match
-    criteria.push({
-      key: "city",
-      label: "City",
-      matched: property.city === searchCriteria.city,
-      value: property.city,
-    });
-
-    // Check bedrooms match
-    criteria.push({
-      key: "bedrooms",
-      label: "Bedrooms",
-      matched: property.bedrooms === searchCriteria.bedrooms,
-      value: property.bedrooms,
-    });
-
-    // Check price match (below or equal to the search criteria)
-    criteria.push({
-      key: "price",
-      label: "Price",
-      matched: property.price !== null && property.price <= searchCriteria.price,
-      value: property.price,
-    });
-
-    // Check amenities match (at least one amenity matches)
-    const amenitiesMatch = property.amenities !== null && 
-      searchCriteria.amenities.some(amenity => 
-        property.amenities?.includes(amenity)
-      );
-    criteria.push({
-      key: "amenities",
-      label: "Amenities",
-      matched: amenitiesMatch,
-      value: property.amenities?.join(", ") || "",
-    });
-
-    return criteria;
-  };
-
-  // Function to get the number of matched criteria
-  const getMatchCount = (matchCriteria: MatchCriteria[]): number => {
-    return matchCriteria.filter(criteria => criteria.matched).length;
-  };
+  }, []);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <Loader2 className="h-6 w-6 text-brand-blue animate-spin" />
-        <span className="ml-2 text-brand-darkBlue">Loading properties...</span>
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-blue" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+        <p>{error}</p>
       </div>
     );
   }
 
   if (properties.length === 0) {
     return (
-      <Card className="p-6 text-center">
-        <p className="text-lg text-muted-foreground">No properties found. List your first property to see it here.</p>
-      </Card>
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">You haven't listed any properties yet.</p>
+      </div>
     );
   }
 
   return (
-    <Card className="overflow-hidden">
-      <Table>
-        <TableCaption>A list of your properties</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Property Type</TableHead>
-            <TableHead>Listing Type</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Area</TableHead>
-            <TableHead>Bedrooms</TableHead>
-            <TableHead>Bathrooms</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Match Criteria</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {properties.map((property) => {
-            const matchCriteria = evaluateMatchCriteria(property);
-            const matchCount = getMatchCount(matchCriteria);
-            
-            return (
-              <TableRow key={property.id}>
-                <TableCell>{property.id}</TableCell>
-                <TableCell className="font-medium">{property.title}</TableCell>
-                <TableCell>{property["Property Type"]}</TableCell>
-                <TableCell>
-                  <Badge variant={property.listing_type === 'buy' ? 'default' : 'outline'}>
-                    {property.listing_type === 'buy' ? 'Sale' : 'Rent'}
+    <Table>
+      <TableCaption>A list of your listed properties</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Title</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Location</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Area</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Match Criteria</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {properties.map((property) => (
+          <TableRow key={property.id}>
+            <TableCell className="font-medium">{property.title || 'Untitled Property'}</TableCell>
+            <TableCell>{property["Property Type"] || property.bedrooms || 'Unknown'}</TableCell>
+            <TableCell>{property.locality}, {property.city}</TableCell>
+            <TableCell>₹{property.price?.toLocaleString() || 'N/A'}</TableCell>
+            <TableCell>{property["Covered Area (sq.ft)"] || 'N/A'} sq.ft</TableCell>
+            <TableCell>
+              <Badge variant={property["Possession Status"] === "Ready to Move" ? "success" : "info"}>
+                {property["Possession Status"] || 'Not Specified'}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <div className="space-y-1">
+                {property.matchCriteria?.matches.map(match => (
+                  <Badge key={match} variant="success" className="mr-1 mb-1">
+                    {match} ✓
                   </Badge>
-                </TableCell>
-                <TableCell>₹{property.price?.toLocaleString() || 'N/A'}</TableCell>
-                <TableCell>{property.locality ? `${property.locality}, ${property.city}` : property.city}</TableCell>
-                <TableCell>{property["Covered Area (sq.ft)"] || 'N/A'} sq.ft</TableCell>
-                <TableCell>{property.bedrooms || 'N/A'}</TableCell>
-                <TableCell>{property.Bathrooms || 'N/A'}</TableCell>
-                <TableCell>
-                  {new Date(property.created_at).toLocaleDateString('en-IN')}
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">
-                      {matchCount} of {matchCriteria.length} criteria matched
-                    </div>
-                    <div className="text-xs space-y-1">
-                      {matchCriteria.map((criteria) => (
-                        <div key={criteria.key} className="flex items-center">
-                          <span className={`w-2 h-2 rounded-full ${criteria.matched ? 'bg-green-500' : 'bg-red-500'} mr-1`}></span>
-                          <span className={criteria.matched ? 'text-green-700' : 'text-red-700'}>
-                            {criteria.label}: {criteria.value?.toString() || 'N/A'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Card>
+                ))}
+                {property.matchCriteria?.nonMatches.map(nonMatch => (
+                  <Badge key={nonMatch} variant="warning" className="mr-1 mb-1">
+                    {nonMatch} ✗
+                  </Badge>
+                ))}
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 

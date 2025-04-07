@@ -10,3 +10,4 @@ export { default as ListingTypeSelector } from './form-sections/ListingTypeSelec
 export { default as BasicDetailsSection } from './form-sections/BasicDetailsSection';
 export { default as PropertyDetailsSection } from './form-sections/PropertyDetailsSection';
 export { default as AdvancedDetailsSection } from './form-sections/AdvancedDetailsSection';
+export { default as SupplierTypeSelector } from './form-sections/SupplierTypeSelector';
