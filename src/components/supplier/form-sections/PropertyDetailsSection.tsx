@@ -38,24 +38,7 @@ const PropertyDetailsSection: React.FC<PropertyDetailsSectionProps> = ({ form })
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="coverArea"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Covered Area (sq.ft)</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="e.g., 1200" 
-                  {...field} 
-                  className="focus:border-brand-blue focus:ring-brand-blue/30" 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Removed the duplicate Covered Area field that was here */}
       </div>
 
       <div className="grid grid-cols-2 gap-4">

@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 50% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -14,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 215 70% 33%;
+    --primary: 220 80% 56%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 152 55% 34%;
+    --secondary: 160 65% 54%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 276 60% 55%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,9 +33,9 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 220 40% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -62,19 +62,19 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-brand-blue hover:bg-brand-darkBlue text-white px-6 py-2 rounded-md transition-colors;
+    @apply bg-brand-blue hover:bg-brand-darkBlue text-white px-6 py-2 rounded-md transition-colors shadow-md;
   }
 
   .btn-secondary {
-    @apply bg-brand-green hover:bg-brand-green/90 text-white px-6 py-2 rounded-md transition-colors;
+    @apply bg-brand-green hover:bg-brand-green/90 text-white px-6 py-2 rounded-md transition-colors shadow-md;
   }
 
   .btn-accent {
-    @apply bg-brand-orange hover:bg-brand-warmAccent text-white px-6 py-2 rounded-md transition-colors;
+    @apply bg-brand-orange hover:bg-brand-warmAccent text-white px-6 py-2 rounded-md transition-colors shadow-md;
   }
 
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue/60;
   }
 
   .card-shadow {
@@ -82,6 +82,22 @@
   }
   
   .gradient-bg {
-    @apply bg-gradient-to-br from-brand-lightBlue to-brand-lightGreen;
+    @apply bg-gradient-to-br from-brand-blue to-brand-purple;
+  }
+  
+  .gradient-bg-light {
+    @apply bg-gradient-to-br from-brand-lightBlue via-white to-brand-lightPurple;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg;
+  }
+  
+  .animation-hover {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-lg;
   }
 }
