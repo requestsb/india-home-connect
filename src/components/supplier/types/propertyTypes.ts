@@ -1,14 +1,11 @@
-
 export type PropertyListingFormValues = {
   title: string;
   description: string;
   propertyType: string;
   subPropertyType: string;
   listingType: 'buy' | 'rent';
-  price: string;
-  priceRange: string;
+  budget: string;
   coverArea: string;
-  areaRange: string;
   locality: string;
   city: string;
   floor: string;
@@ -103,14 +100,12 @@ export const areaRangeOptions = [
   'Above 50,000 sq.ft'
 ];
 
-// Utility function to generate property title
 export const generatePropertyTitle = (bedrooms: string, locality: string, city: string): string => {
   if (!bedrooms || !locality || !city) return '';
   
   return `${bedrooms} BHK Property for Sale in ${locality}, ${city}`;
 };
 
-// Utility function to generate property description
 export const generatePropertyDescription = (
   bedrooms: string, 
   locality: string, 
@@ -127,14 +122,12 @@ export const generatePropertyDescription = (
   return `Beautiful ${bedrooms} BHK property located in ${locality}, ${city}. ${amenitiesText} Available for ${price ? `₹${price}` : 'affordable price'}.`;
 };
 
-// Utility function to generate SEO meta title
 export const generateSeoMetaTitle = (bedrooms: string, locality: string, city: string): string => {
   if (!bedrooms || !locality || !city) return '';
   
   return `${bedrooms} BHK Property in ${locality}, ${city} | Best Properties`;
 };
 
-// Utility function to generate SEO meta description
 export const generateSeoMetaDescription = (
   bedrooms: string, 
   locality: string, 

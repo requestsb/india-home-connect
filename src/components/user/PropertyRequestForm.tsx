@@ -135,7 +135,7 @@ const PropertyRequestForm: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Budget Range: {formatCurrency(formData.budget)}</label>
+            <label className="text-sm font-medium">Budget: {formatCurrency(formData.budget)}</label>
             <Slider
               defaultValue={[formData.budget]}
               max={50000000}

@@ -44,10 +44,8 @@ const PropertyListingForm: React.FC<{
       propertyType: 'residential',
       subPropertyType: '',
       listingType: 'buy',
-      price: '',
-      priceRange: '',
+      budget: '',
       coverArea: '',
-      areaRange: '',
       locality: '',
       city: '',
       floor: '',
@@ -70,7 +68,7 @@ const PropertyListingForm: React.FC<{
   const watchedBedrooms = form.watch('bedrooms');
   const watchedLocality = form.watch('locality');
   const watchedCity = form.watch('city');
-  const watchedPrice = form.watch('price');
+  const watchedBudget = form.watch('budget');
 
   // Auto-generate title, description and SEO tags when dependent fields change
   useEffect(() => {
@@ -83,28 +81,26 @@ const PropertyListingForm: React.FC<{
       const seoMetaTitle = generateSeoMetaTitle(watchedBedrooms, watchedLocality, watchedCity);
       form.setValue('seoMetaTitle', seoMetaTitle);
       
-      // Generate property description and SEO meta description if price is available
-      if (watchedPrice) {
-        const description = generatePropertyDescription(
-          watchedBedrooms, 
-          watchedLocality, 
-          watchedCity, 
-          selectedAmenities,
-          watchedPrice
-        );
-        form.setValue('description', description);
+      // Generate property description and SEO meta description
+      const description = generatePropertyDescription(
+        watchedBedrooms, 
+        watchedLocality, 
+        watchedCity, 
+        selectedAmenities,
+        watchedBudget || 'affordable price'
+      );
+      form.setValue('description', description);
         
-        const seoMetaDescription = generateSeoMetaDescription(
-          watchedBedrooms, 
-          watchedLocality, 
-          watchedCity, 
-          selectedAmenities,
-          watchedPrice
-        );
-        form.setValue('seoMetaDescription', seoMetaDescription);
-      }
+      const seoMetaDescription = generateSeoMetaDescription(
+        watchedBedrooms, 
+        watchedLocality, 
+        watchedCity, 
+        selectedAmenities,
+        watchedBudget || 'affordable price'
+      );
+      form.setValue('seoMetaDescription', seoMetaDescription);
     }
-  }, [watchedBedrooms, watchedLocality, watchedCity, watchedPrice, selectedAmenities, form]);
+  }, [watchedBedrooms, watchedLocality, watchedCity, watchedBudget, selectedAmenities, form]);
 
   // Update localities when city changes
   useEffect(() => {
@@ -115,29 +111,6 @@ const PropertyListingForm: React.FC<{
       setAvailableLocalities([]);
     }
   }, [selectedCity, form]);
-
-  // Add amenities watcher to update description when amenities change
-  useEffect(() => {
-    if (watchedBedrooms && watchedLocality && watchedCity && watchedPrice) {
-      const description = generatePropertyDescription(
-        watchedBedrooms, 
-        watchedLocality, 
-        watchedCity, 
-        selectedAmenities,
-        watchedPrice
-      );
-      form.setValue('description', description);
-      
-      const seoMetaDescription = generateSeoMetaDescription(
-        watchedBedrooms, 
-        watchedLocality, 
-        watchedCity, 
-        selectedAmenities,
-        watchedPrice
-      );
-      form.setValue('seoMetaDescription', seoMetaDescription);
-    }
-  }, [selectedAmenities, watchedBedrooms, watchedLocality, watchedCity, watchedPrice, form]);
 
   const handleFormReset = () => {
     form.reset();
@@ -151,7 +124,8 @@ const PropertyListingForm: React.FC<{
   const onSubmit = (data: PropertyListingFormValues) => {
     const formData = { 
       ...data, 
-      amenities: selectedAmenities 
+      amenities: selectedAmenities,
+      priceRange: data.budget // Map budget to priceRange for backend compatibility
     };
     
     if (onExternalSubmit) {
@@ -185,8 +159,8 @@ const PropertyListingForm: React.FC<{
   const handleListingTypeChange = (value: 'buy' | 'rent') => {
     setListingType(value);
     form.setValue('listingType', value);
-    // Reset price range when changing listing type
-    form.setValue('priceRange', '');
+    // Reset budget when changing listing type
+    form.setValue('budget', '');
     setSelectedCategory('');
   };
   

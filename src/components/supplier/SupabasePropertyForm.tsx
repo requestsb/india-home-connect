@@ -47,6 +47,9 @@ const SupabasePropertyForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      // Extract the budget value from the form data
+      const budgetValue = formData.budget || formData.priceRange;
+      
       // Prepare data for submission
       const propertyData = {
         ...formData,
@@ -58,7 +61,8 @@ const SupabasePropertyForm: React.FC = () => {
         "Covered Area (sq.ft)": formData.coverArea ? parseFloat(formData.coverArea) : null,
         Bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : null,
         "Possession Status": formData.possession,
-        price: formData.price ? parseFloat(formData.price) : null,
+        price: null, // No longer using direct price input
+        priceRange: budgetValue, // Use budget value
         listing_type: formData.listingType,
         created_at: new Date().toISOString(),
         supplier_type: formData.supplierType,

@@ -35,7 +35,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         control={form.control}
         name="title"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="hidden">
             <FormLabel>Property Title</FormLabel>
             <FormControl>
               <Input 
@@ -56,7 +56,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         control={form.control}
         name="description"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="hidden">
             <FormLabel>Property Description</FormLabel>
             <FormControl>
               <textarea 
@@ -131,41 +131,17 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <FormField
           control={form.control}
-          name="price"
+          name="budget"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price (₹)</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder={listingType === 'buy' ? "e.g., 5000000" : "e.g., 25000"} 
-                  {...field} 
-                  className="focus:border-brand-blue focus:ring-brand-blue/30"
-                />
-              </FormControl>
-              <FormDescription>
-                {listingType === 'buy' 
-                  ? "Enter the total price of the property" 
-                  : "Enter the monthly rent amount"}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="priceRange"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price Range</FormLabel>
+              <FormLabel>Budget</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="focus:ring-brand-blue/30">
-                    <SelectValue placeholder="Select price range" />
+                    <SelectValue placeholder="Select budget range" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -181,7 +157,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
                 </SelectContent>
               </Select>
               <FormDescription>
-                Select a price range for better matching with buyer requirements
+                Select a budget range for better matching with buyer requirements
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -189,59 +165,38 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="coverArea"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Covered Area (sq.ft)</FormLabel>
+      <FormField
+        control={form.control}
+        name="coverArea"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Area Range</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="e.g., 1200" 
-                  {...field} 
-                  className="focus:border-brand-blue focus:ring-brand-blue/30"
-                />
+                <SelectTrigger className="focus:ring-brand-blue/30">
+                  <SelectValue placeholder="Select area range" />
+                </SelectTrigger>
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="areaRange"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Area Range</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="focus:ring-brand-blue/30">
-                    <SelectValue placeholder="Select area range" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {areaRangeOptions.map((range) => (
-                    <SelectItem key={range} value={range}>{range}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Select an area range for better matching with buyer requirements
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+              <SelectContent>
+                {areaRangeOptions.map((range) => (
+                  <SelectItem key={range} value={range}>{range}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              Select an area range for your property
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <div className="space-y-4">
         <FormField
           control={form.control}
           name="seoMetaTitle"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="hidden">
               <FormLabel>SEO Meta Title</FormLabel>
               <FormControl>
                 <Input 
@@ -262,7 +217,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
           control={form.control}
           name="seoMetaDescription"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="hidden">
               <FormLabel>SEO Meta Description</FormLabel>
               <FormControl>
                 <textarea 
