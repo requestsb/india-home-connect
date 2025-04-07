@@ -64,18 +64,13 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				brand: {
-					blue: '#4361EE',
-					darkBlue: '#3A0CA3',
-					lightBlue: '#F1F7FF',
-					green: '#4CC9A1',
+					blue: '#1E4D8A',
+					darkBlue: '#0F3057',
+					lightBlue: '#E0F4FF',
+					green: '#28865C',
 					lightGreen: '#E8F5E9',
-					orange: '#F97316',
-					warmAccent: '#FB8500',
-					purple: '#7209B7',
-					lightPurple: '#F3EAFF',
-					coral: '#FF5E5B',
-					teal: '#4ECDC4',
-					yellow: '#FFD166',
+					orange: '#FB923C',
+					warmAccent: '#E9AB6F',
 				}
 			},
 			borderRadius: {
@@ -99,33 +94,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'fade-in': {
-					'0%': {
-						opacity: '0',
-						transform: 'translateY(10px)'
-					},
-					'100%': {
-						opacity: '1',
-						transform: 'translateY(0)'
-					}
-				},
-				'scale-in': {
-					'0%': {
-						transform: 'scale(0.95)',
-						opacity: '0'
-					},
-					'100%': {
-						transform: 'scale(1)',
-						opacity: '1'
-					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},

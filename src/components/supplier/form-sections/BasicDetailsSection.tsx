@@ -30,7 +30,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
   areaRangeOptions
 }) => {
   return (
-    <div className="space-y-6 bg-gradient-bg-light p-5 rounded-lg shadow-sm">
+    <div className="space-y-6">
       <FormField
         control={form.control}
         name="title"
@@ -88,7 +88,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
                 defaultValue={field.value}
               >
                 <FormControl>
-                  <SelectTrigger className="focus:ring-brand-blue/30 bg-white">
+                  <SelectTrigger className="focus:ring-brand-blue/30">
                     <SelectValue placeholder="Select City" />
                   </SelectTrigger>
                 </FormControl>
@@ -115,7 +115,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
                 disabled={!selectedCity}
               >
                 <FormControl>
-                  <SelectTrigger className="focus:ring-brand-blue/30 bg-white">
+                  <SelectTrigger className="focus:ring-brand-blue/30">
                     <SelectValue placeholder={selectedCity ? "Select Locality" : "Select City First"} />
                   </SelectTrigger>
                 </FormControl>
@@ -140,7 +140,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
               <FormLabel>Budget</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="focus:ring-brand-blue/30 bg-white">
+                  <SelectTrigger className="focus:ring-brand-blue/30">
                     <SelectValue placeholder="Select budget range" />
                   </SelectTrigger>
                 </FormControl>
@@ -170,10 +170,10 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
         name="coverArea"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Covered Area (sq.ft)</FormLabel>
+            <FormLabel>Area Range</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="focus:ring-brand-blue/30 bg-white">
+                <SelectTrigger className="focus:ring-brand-blue/30">
                   <SelectValue placeholder="Select area range" />
                 </SelectTrigger>
               </FormControl>
@@ -184,7 +184,7 @@ const BasicDetailsSection: React.FC<BasicDetailsSectionProps> = ({
               </SelectContent>
             </Select>
             <FormDescription>
-              Select the covered area for your property
+              Select an area range for your property
             </FormDescription>
             <FormMessage />
           </FormItem>
