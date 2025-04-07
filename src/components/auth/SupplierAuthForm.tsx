@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import Logo from '../Logo';
+import { supabase } from "@/integrations/supabase/client";
 
 const SupplierAuthForm: React.FC = () => {
   const navigate = useNavigate();
@@ -31,34 +32,95 @@ const SupplierAuthForm: React.FC = () => {
     setFormData(prev => ({ ...prev, supplierType: value }));
   };
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
       toast({
         title: "Success!",
         description: "You've successfully signed in",
       });
+      
       navigate('/supplier/dashboard');
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Sign in failed",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.email || !formData.password || !formData.name || !formData.supplierType) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Sign up the user
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            company: formData.company,
+            phone: formData.phone,
+            supplier_type: formData.supplierType,
+          },
+        },
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Update profile if needed
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ supplier_type: formData.supplierType })
+        .eq('id', data.user?.id);
+      
+      if (profileError) {
+        console.error("Error updating profile:", profileError);
+      }
+      
       toast({
         title: "Account created!",
         description: "Your supplier account has been created successfully",
       });
+      
       navigate('/supplier/dashboard');
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Sign up failed",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
