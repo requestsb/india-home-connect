@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -14,20 +13,10 @@ const PropertyTable: React.FC = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        // Get the current user's ID
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          setError("You must be logged in to view your properties");
-          setLoading(false);
-          return;
-        }
-        
-        // Fetch properties for the current user
+        // Fetch all properties without filtering by user_id
         const { data, error } = await supabase
           .from('property')
-          .select('*')
-          .eq('user_id', user.id);
+          .select('*');
         
         if (error) throw error;
         
@@ -129,7 +118,7 @@ const PropertyTable: React.FC = () => {
   if (properties.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">You haven't listed any properties yet.</p>
+        <p className="text-muted-foreground">No properties have been listed yet.</p>
       </div>
     );
   }
