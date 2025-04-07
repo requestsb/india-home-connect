@@ -31,10 +31,9 @@ const PropertyTable: React.FC = () => {
         
         if (error) throw error;
         
-        // Process data to add match criteria
+        // Process data to add match criteria and map to PropertyData structure
         const processedData = data?.map(property => {
-          // This is a simplified example - in a real application, you would compare
-          // against actual search criteria from users
+          // Add match criteria
           const matchCriteria = {
             matches: [] as string[],
             nonMatches: [] as string[]
@@ -56,13 +55,29 @@ const PropertyTable: React.FC = () => {
           if (property.amenities && property.amenities.length > 0) matchCriteria.matches.push('Amenities');
           else matchCriteria.nonMatches.push('Amenities');
           
+          // Map data structure to match PropertyData interface
           return {
-            ...property,
+            id: property.id,
+            title: property.title || 'Untitled Property',
+            price: property.price || 0,
+            city: property.city || '',
+            locality: property.locality || '',
+            "Property Type": property["Property Type"] || '',
+            bedrooms: property.bedrooms || '',
+            bathrooms: property.Bathrooms || 0, // Map Bathrooms to bathrooms
+            "Covered Area (sq.ft)": property["Covered Area (sq.ft)"] || 0,
+            created_at: property.created_at,
+            listing_type: property.listing_type || '',
+            "Possession Status": property["Possession Status"] || '',
+            user_id: property.user_id || '',
+            supplierType: property.supplier_type || '', // Map supplier_type to supplierType
+            description: property.description || '',
+            amenities: property.amenities || [],
             matchCriteria
-          };
+          } as PropertyData;
         }) || [];
         
-        setProperties(processedData as PropertyData[]);
+        setProperties(processedData);
       } catch (err: any) {
         console.error('Error fetching properties:', err);
         setError(err.message || 'Failed to load properties');
