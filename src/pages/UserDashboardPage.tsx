@@ -54,19 +54,19 @@ const UserDashboardPage: React.FC = () => {
             <TabsList className="mb-6 flex flex-wrap bg-white shadow-sm">
               <TabsTrigger 
                 value="requests" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-blue/10 data-[state=active]:to-brand-blue/5 data-[state=active]:text-brand-blue data-[state=active]:shadow-sm"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-blue/10 data-[state=active]:to-brand-blue/5 data-[state=active]:text-brand-blue data-[state=active]:shadow-sm text-base px-6 py-3"
               >
                 My Requests
               </TabsTrigger>
               <TabsTrigger 
                 value="chats" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-green/10 data-[state=active]:to-brand-green/5 data-[state=active]:text-brand-green data-[state=active]:shadow-sm"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-green/10 data-[state=active]:to-brand-green/5 data-[state=active]:text-brand-green data-[state=active]:shadow-sm text-base px-6 py-3"
               >
                 Active Chats
               </TabsTrigger>
               <TabsTrigger 
                 value="new" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-orange/10 data-[state=active]:to-brand-orange/5 data-[state=active]:text-brand-orange data-[state=active]:shadow-sm"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-orange/10 data-[state=active]:to-brand-orange/5 data-[state=active]:text-brand-orange data-[state=active]:shadow-sm text-base px-6 py-3"
               >
                 New Request
               </TabsTrigger>

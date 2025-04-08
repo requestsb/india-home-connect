@@ -84,4 +84,29 @@
   .gradient-bg {
     @apply bg-gradient-to-br from-brand-lightBlue to-brand-lightGreen;
   }
+
+  /* GenZ and Millennial friendly animations and effects */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .pulse-effect {
+    @apply animate-pulse;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+  
+  .tab-button {
+    @apply px-6 py-3 text-base font-medium transition-all duration-300 hover:bg-slate-100 rounded-md;
+  }
+  
+  .interactive-card {
+    @apply bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-brand-blue/20;
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-green;
+  }
 }
