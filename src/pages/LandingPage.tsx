@@ -28,9 +28,16 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Search Bar Component - Now at the very top of the main content */}
+      <div className="w-full py-6 bg-gradient-to-r from-blue-50 to-blue-100">
+        <div className="container mx-auto px-4">
+          <SearchBar />
+        </div>
+      </div>
+
       <main className="flex-1">
-        {/* Hero Section with Search Bar */}
-        <section className="py-16 md:py-24 bg-gradient-to-r from-blue-50 to-blue-100">
+        {/* Hero Section */}
+        <section className="py-16 md:py-20 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center mb-10">
               <div className="md:w-1/2 mb-10 md:mb-0">
@@ -49,9 +56,6 @@ const LandingPage: React.FC = () => {
                 />
               </div>
             </div>
-            
-            {/* Search Bar Component */}
-            <SearchBar />
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
               <Button 

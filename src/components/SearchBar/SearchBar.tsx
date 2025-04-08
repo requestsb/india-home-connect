@@ -132,9 +132,9 @@ const SearchBar: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-lg p-4 max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="col-span-1 md:col-span-2 lg:col-span-4">
+    <div className="w-full bg-white rounded-lg shadow-md p-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4">
           <SearchTypeSelector 
             value={searchType} 
             onChange={(value) => setSearchType(value as 'buy' | 'rent' | 'pg' | 'plot' | 'commercial')}
@@ -211,10 +211,10 @@ const SearchBar: React.FC = () => {
           </div>
         )}
         
-        <div className="col-span-1 md:col-span-2 lg:col-span-4 flex justify-center">
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex justify-center">
           <Button 
             onClick={handleSearch}
-            className="w-full md:w-auto bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"
+            className="w-full sm:w-auto bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"
           >
             <Search className="h-4 w-4 mr-2" />
             Search Properties
