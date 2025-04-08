@@ -1,7 +1,6 @@
-
 import React, { useRef } from 'react';
 import UserNavbar from '@/components/layout/UserNavbar';
-import PropertyRequestForm from '@/components/user/PropertyRequestForm';
+import PropertyRequestForm from '@/components/user/propertyRequest';
 import ActiveChats from '@/components/user/ActiveChats';
 import StatsCard from '@/components/dashboard/StatsCard';
 import { Building, MessageSquare, UserCheck } from 'lucide-react';
