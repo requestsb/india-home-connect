@@ -11,11 +11,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { 
-  priceRangeOptions,
-  areaRangeOptions,
   cities,
   cityLocalities 
 } from '@/components/supplier/data/propertyOptions';
+import { 
+  priceRangeOptions,
+  areaRangeOptions 
+} from '@/components/supplier/types/propertyTypes';
 
 type FormData = {
   requestType: 'buy' | 'rent' | 'pg' | 'plot' | 'commercial';
@@ -110,7 +112,7 @@ const PropertyRequestForm: React.FC = () => {
       ];
     }
     
-    return formData.requestType === 'rent' || formData.requestType === 'pg' 
+    return formData.requestType === 'rent' 
       ? priceRangeOptions.rent 
       : priceRangeOptions.buy;
   };
