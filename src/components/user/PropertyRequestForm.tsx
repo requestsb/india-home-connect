@@ -12,24 +12,37 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { 
   cities,
-  cityLocalities 
+  cityLocalities,
+  furnishingTypes,
+  facingOptions,
+  bathroomOptions,
+  amenitiesOptions,
+  possessionOptions
 } from '@/components/supplier/data/propertyOptions';
 import { 
   priceRangeOptions,
   areaRangeOptions 
 } from '@/components/supplier/types/propertyTypes';
 
+// Extended form data type to include all new fields
 type FormData = {
   requestType: 'buy' | 'rent' | 'pg' | 'plot' | 'commercial';
   propertyType: string;
+  subPropertyType?: string;
   location: string;
   locality: string;
   budget: string;
   areaSize: string;
   bedrooms: string;
+  bathrooms?: string;
   gender?: 'male' | 'female' | 'any';
+  furnishing?: string;
+  facing?: string;
+  amenities?: string[];
+  possession?: string;
   requirements: string;
   commercialType?: 'buy' | 'lease';
+  plotType?: string;
 };
 
 const PropertyRequestForm: React.FC = () => {
@@ -37,6 +50,7 @@ const PropertyRequestForm: React.FC = () => {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(false);
   const [localities, setLocalities] = useState<string[]>([]);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   
   const [formData, setFormData] = useState<FormData>({
     requestType: 'buy',
@@ -66,6 +80,24 @@ const PropertyRequestForm: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const toggleAmenity = (amenity: string) => {
+    setSelectedAmenities(prev => {
+      if (prev.includes(amenity)) {
+        return prev.filter(a => a !== amenity);
+      } else {
+        return [...prev, amenity];
+      }
+    });
+    
+    // Also update form data
+    setFormData(prev => ({
+      ...prev,
+      amenities: selectedAmenities.includes(amenity) 
+        ? prev.amenities?.filter(a => a !== amenity) 
+        : [...(prev.amenities || []), amenity]
+    }));
+  };
+
   const getPropertyTypeOptions = () => {
     switch (formData.requestType) {
       case 'buy':
@@ -84,6 +116,7 @@ const PropertyRequestForm: React.FC = () => {
           { value: 'residential', label: 'Residential Plot' },
           { value: 'commercial', label: 'Commercial Land' },
           { value: 'agricultural', label: 'Agricultural Land' },
+          { value: 'farmhouse', label: 'Farm House' },
         ];
       case 'commercial':
         return [
@@ -98,6 +131,24 @@ const PropertyRequestForm: React.FC = () => {
       default:
         return [];
     }
+  };
+
+  const getSubPropertyTypeOptions = () => {
+    if (formData.propertyType === 'flat') {
+      return [
+        { value: 'multistorey', label: 'Multistorey Apartment' },
+        { value: 'builder_floor', label: 'Builder Floor Apartment' },
+        { value: 'penthouse', label: 'Penthouse' },
+        { value: 'studio', label: 'Studio Apartment' },
+      ];
+    } else if (formData.propertyType === 'house') {
+      return [
+        { value: 'residential_house', label: 'Residential House' },
+        { value: 'villa', label: 'Villa' },
+        { value: 'farmhouse', label: 'Farm House' },
+      ];
+    }
+    return [];
   };
 
   const getBudgetOptions = () => {
@@ -118,12 +169,30 @@ const PropertyRequestForm: React.FC = () => {
   };
 
   const showAreaSizeField = () => {
+    // Show area size for everything except PG
     return formData.requestType !== 'pg';
   };
 
   const showBedroomsField = () => {
+    // Show bedrooms for residential properties (not for plots, commercial, or PG)
     return (formData.requestType === 'buy' || formData.requestType === 'rent') && 
            (formData.propertyType === 'flat' || formData.propertyType === 'house');
+  };
+
+  const showBathroomsField = () => {
+    // Similar to bedrooms
+    return showBedroomsField();
+  };
+
+  const showFurnishingField = () => {
+    // For residential properties only
+    return (formData.requestType === 'buy' || formData.requestType === 'rent') && 
+           (formData.propertyType === 'flat' || formData.propertyType === 'house');
+  };
+
+  const showFacingField = () => {
+    // For residential and commercial properties
+    return formData.propertyType && formData.propertyType !== 'pg';
   };
 
   const showGenderField = () => {
@@ -132,6 +201,25 @@ const PropertyRequestForm: React.FC = () => {
 
   const showCommercialTypeField = () => {
     return formData.requestType === 'commercial';
+  };
+
+  const showPlotTypeField = () => {
+    return formData.requestType === 'plot';
+  };
+
+  const showSubPropertyTypeField = () => {
+    return (formData.propertyType === 'flat' || formData.propertyType === 'house') &&
+           (formData.requestType === 'buy' || formData.requestType === 'rent');
+  };
+
+  const showAmenitiesField = () => {
+    // Show amenities for residential properties
+    return (formData.requestType === 'buy' || formData.requestType === 'rent') && 
+           (formData.propertyType === 'flat' || formData.propertyType === 'house');
+  };
+
+  const showPossessionField = () => {
+    return formData.requestType === 'buy' || formData.requestType === 'plot';
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -157,14 +245,15 @@ const PropertyRequestForm: React.FC = () => {
         bedrooms: '',
         requirements: '',
       });
+      setSelectedAmenities([]);
     }, 1500);
   };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Submit Property Request</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold text-brand-darkBlue">Submit Property Request</CardTitle>
+        <CardDescription className="text-lg text-gray-600">
           Specify exactly what you're looking for and let property suppliers come to you
         </CardDescription>
       </CardHeader>
@@ -227,7 +316,7 @@ const PropertyRequestForm: React.FC = () => {
               onValueChange={(value) => handleSelectChange('propertyType', value)}
               required
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select property type" />
               </SelectTrigger>
               <SelectContent>
@@ -238,6 +327,44 @@ const PropertyRequestForm: React.FC = () => {
             </Select>
           </div>
 
+          {showSubPropertyTypeField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Property Sub-Type</label>
+              <Select
+                value={formData.subPropertyType}
+                onValueChange={(value) => handleSelectChange('subPropertyType', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select property sub-type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getSubPropertyTypeOptions().map(option => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showPlotTypeField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Plot Type</label>
+              <Select
+                value={formData.plotType}
+                onValueChange={(value) => handleSelectChange('plotType', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select plot type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="residential">Residential Plot</SelectItem>
+                  <SelectItem value="commercial">Commercial Land</SelectItem>
+                  <SelectItem value="agricultural">Agricultural Land</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="text-sm font-medium">City</label>
             <Select
@@ -245,7 +372,7 @@ const PropertyRequestForm: React.FC = () => {
               onValueChange={(value) => handleSelectChange('location', value)}
               required
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select city" />
               </SelectTrigger>
               <SelectContent>
@@ -264,7 +391,7 @@ const PropertyRequestForm: React.FC = () => {
                 onValueChange={(value) => handleSelectChange('locality', value)}
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select locality" />
                 </SelectTrigger>
                 <SelectContent>
@@ -283,7 +410,7 @@ const PropertyRequestForm: React.FC = () => {
               onValueChange={(value) => handleSelectChange('budget', value)}
               required
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select budget range" />
               </SelectTrigger>
               <SelectContent>
@@ -301,7 +428,7 @@ const PropertyRequestForm: React.FC = () => {
                 value={formData.areaSize}
                 onValueChange={(value) => handleSelectChange('areaSize', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select area range" />
                 </SelectTrigger>
                 <SelectContent>
@@ -320,7 +447,7 @@ const PropertyRequestForm: React.FC = () => {
                 value={formData.bedrooms}
                 onValueChange={(value) => handleSelectChange('bedrooms', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select number of bedrooms" />
                 </SelectTrigger>
                 <SelectContent>
@@ -330,6 +457,63 @@ const PropertyRequestForm: React.FC = () => {
                   <SelectItem value="4">4 BHK</SelectItem>
                   <SelectItem value="5">5 BHK</SelectItem>
                   <SelectItem value="6">6+ BHK</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showBathroomsField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Bathrooms</label>
+              <Select
+                value={formData.bathrooms}
+                onValueChange={(value) => handleSelectChange('bathrooms', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select number of bathrooms" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bathroomOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showFurnishingField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Furnishing</label>
+              <Select
+                value={formData.furnishing}
+                onValueChange={(value) => handleSelectChange('furnishing', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select furnishing type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {furnishingTypes.map(option => (
+                    <SelectItem key={option} value={option.toLowerCase()}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showFacingField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Facing</label>
+              <Select
+                value={formData.facing}
+                onValueChange={(value) => handleSelectChange('facing', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select facing direction" />
+                </SelectTrigger>
+                <SelectContent>
+                  {facingOptions.map(option => (
+                    <SelectItem key={option} value={option.toLowerCase()}>{option}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -359,6 +543,47 @@ const PropertyRequestForm: React.FC = () => {
             </div>
           )}
 
+          {showPossessionField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Possession Status</label>
+              <Select
+                value={formData.possession}
+                onValueChange={(value) => handleSelectChange('possession', value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select possession status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {possessionOptions.map(option => (
+                    <SelectItem key={option} value={option.toLowerCase()}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showAmenitiesField() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Required Amenities</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {amenitiesOptions.map(amenity => (
+                  <div key={amenity} className="flex items-start space-x-2">
+                    <input
+                      type="checkbox"
+                      id={`amenity-${amenity}`}
+                      checked={selectedAmenities.includes(amenity)}
+                      onChange={() => toggleAmenity(amenity)}
+                      className="mt-1"
+                    />
+                    <label htmlFor={`amenity-${amenity}`} className="text-sm">
+                      {amenity}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Additional Requirements</label>
             <Textarea
@@ -367,6 +592,7 @@ const PropertyRequestForm: React.FC = () => {
               value={formData.requirements}
               onChange={handleChange}
               rows={isMobile ? 3 : 4}
+              className="resize-none bg-white"
             />
           </div>
         </CardContent>
@@ -374,8 +600,9 @@ const PropertyRequestForm: React.FC = () => {
           <Button 
             type="submit" 
             variant="blueGreen"
-            className="w-full"
+            className="w-full text-base py-6 transform hover:-translate-y-1 transition-all duration-300"
             disabled={isLoading}
+            size="lg"
           >
             {isLoading ? 'Submitting...' : 'Submit Request'}
           </Button>
