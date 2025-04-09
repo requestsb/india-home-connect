@@ -43,7 +43,6 @@ const SearchForm: React.FC = () => {
 
   const handleSearch = () => {
     // Build search params and redirect to search results page
-    // In a real app, you would navigate to a search results page with these parameters
     console.log('Search params:', {
       searchType,
       propertyType,
@@ -61,6 +60,9 @@ const SearchForm: React.FC = () => {
     navigate('/user/auth');
   };
 
+  // Show additional options only if location is selected
+  const showAdditionalOptions = location && locality;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <div className="col-span-1 sm:col-span-2 lg:col-span-4">
@@ -70,24 +72,8 @@ const SearchForm: React.FC = () => {
         />
       </div>
 
-      {searchType === 'commercial' && (
-        <div>
-          <CommercialPurposeSelector
-            value={commercialType}
-            onChange={setCommercialType}
-          />
-        </div>
-      )}
-
-      <div>
-        <PropertyTypeSelector 
-          options={getPropertyTypeOptions(searchType)}
-          value={propertyType}
-          onChange={setPropertyType}
-        />
-      </div>
-
-      <div>
+      {/* Location selector always shown first */}
+      <div className="col-span-1 sm:col-span-2 lg:col-span-4">
         <LocationSelector 
           cities={cities}
           location={location}
@@ -98,43 +84,67 @@ const SearchForm: React.FC = () => {
         />
       </div>
 
-      {(searchType === 'buy' || searchType === 'rent') && 
-       (propertyType === 'flat' || propertyType === 'house') && (
-        <div>
-          <BedroomSelector 
-            value={bedrooms} 
-            onChange={setBedrooms}
-          />
-        </div>
-      )}
+      {/* Show additional options only when location and locality are selected */}
+      {showAdditionalOptions && (
+        <>
+          {searchType === 'commercial' && (
+            <div>
+              <CommercialPurposeSelector
+                value={commercialType}
+                onChange={setCommercialType}
+              />
+            </div>
+          )}
 
-      {searchType === 'pg' && (
-        <div>
-          <GenderSelector
-            value={gender as 'male' | 'female' | 'any'}
-            onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
-          />
-        </div>
-      )}
+          {searchType !== 'pg' && (
+            <div>
+              <PropertyTypeSelector 
+                options={getPropertyTypeOptions(searchType)}
+                value={propertyType}
+                onChange={setPropertyType}
+              />
+            </div>
+          )}
 
-      <div>
-        <BudgetSelector 
-          options={getBudgetOptions(searchType)}
-          value={budget}
-          onChange={setBudget}
-        />
-      </div>
+          {(searchType === 'buy' || searchType === 'rent') && 
+           (propertyType === 'flat' || propertyType === 'house') && (
+            <div>
+              <BedroomSelector 
+                value={bedrooms} 
+                onChange={setBedrooms}
+              />
+            </div>
+          )}
 
-      {searchType !== 'pg' && searchType !== 'rent' && (
-        <div>
-          <AreaSelector 
-            value={area}
-            onChange={setArea}
-          />
-        </div>
+          {searchType === 'pg' && (
+            <div>
+              <GenderSelector
+                value={gender as 'male' | 'female' | 'any'}
+                onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
+              />
+            </div>
+          )}
+
+          <div>
+            <BudgetSelector 
+              options={getBudgetOptions(searchType)}
+              value={budget}
+              onChange={setBudget}
+            />
+          </div>
+
+          {searchType !== 'pg' && searchType !== 'rent' && (
+            <div>
+              <AreaSelector 
+                value={area}
+                onChange={setArea}
+              />
+            </div>
+          )}
+        </>
       )}
       
-      <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex justify-center">
+      <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex justify-center mt-2">
         <Button 
           onClick={handleSearch}
           className="w-full sm:w-auto bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"

@@ -19,26 +19,28 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   onLocalityChange 
 }) => {
   return (
-    <div>
-      <label className="text-xs font-medium text-gray-600">Location</label>
-      <select 
-        className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
-        value={location}
-        onChange={(e) => {
-          onLocationChange(e.target.value);
-          onLocalityChange(''); // Reset locality when location changes
-        }}
-      >
-        <option value="">Select City</option>
-        {cities.map(city => (
-          <option key={city} value={city.toLowerCase()}>
-            {city}
-          </option>
-        ))}
-      </select>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <label className="text-xs font-medium text-gray-600">City</label>
+        <select 
+          className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+          value={location}
+          onChange={(e) => {
+            onLocationChange(e.target.value);
+            onLocalityChange(''); // Reset locality when location changes
+          }}
+        >
+          <option value="">Select City</option>
+          {cities.map(city => (
+            <option key={city} value={city.toLowerCase()}>
+              {city}
+            </option>
+          ))}
+        </select>
+      </div>
       
       {location && localities.length > 0 && (
-        <div className="mt-2">
+        <div>
           <label className="text-xs font-medium text-gray-600">Locality</label>
           <select 
             className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
