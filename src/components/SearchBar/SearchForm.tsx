@@ -60,20 +60,13 @@ const SearchForm: React.FC = () => {
     navigate('/user/auth');
   };
 
-  // Show additional options only if location is selected
-  const showAdditionalOptions = location && locality;
+  // Show property type options only if location is selected
+  const showPropertyOptions = location && locality;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      <div className="col-span-1 sm:col-span-2 lg:col-span-4">
-        <SearchTypeSelector 
-          value={searchType} 
-          onChange={(value) => setSearchType(value as SearchType)}
-        />
-      </div>
-
+    <div className="grid grid-cols-1 gap-3">
       {/* Location selector always shown first */}
-      <div className="col-span-1 sm:col-span-2 lg:col-span-4">
+      <div className="col-span-1">
         <LocationSelector 
           cities={cities}
           location={location}
@@ -84,9 +77,19 @@ const SearchForm: React.FC = () => {
         />
       </div>
 
+      {/* Only show search type selector if location is selected */}
+      {showPropertyOptions && (
+        <div className="col-span-1">
+          <SearchTypeSelector 
+            value={searchType} 
+            onChange={(value) => setSearchType(value as SearchType)}
+          />
+        </div>
+      )}
+
       {/* Show additional options only when location and locality are selected */}
-      {showAdditionalOptions && (
-        <>
+      {showPropertyOptions && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {searchType === 'commercial' && (
             <div>
               <CommercialPurposeSelector
@@ -141,10 +144,10 @@ const SearchForm: React.FC = () => {
               />
             </div>
           )}
-        </>
+        </div>
       )}
       
-      <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex justify-center mt-2">
+      <div className="col-span-1 flex justify-center mt-2">
         <Button 
           onClick={handleSearch}
           className="w-full sm:w-auto bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"
