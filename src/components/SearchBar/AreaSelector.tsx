@@ -9,9 +9,9 @@ interface AreaSelectorProps {
 const AreaSelector: React.FC<AreaSelectorProps> = ({ value, onChange }) => {
   return (
     <div>
-      <label className="text-xs font-medium text-gray-600">Area (sq.ft)</label>
+      <label className="text-xs font-medium text-gray-600 block mb-1.5">Area (sq.ft)</label>
       <select 
-        className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+        className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-blue bg-white shadow-sm"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

@@ -13,22 +13,22 @@ const Hero: React.FC = () => {
     {
       id: '1',
       imageUrl: '/lovable-uploads/366c8ad9-d7e4-4dc0-9fc4-bf90bbd306da.png',
-      title: 'Find Your Dream Home'
+      title: 'Find Your Dream Home Today'
     },
     {
       id: '2',
       imageUrl: '/lovable-uploads/38d4ea24-24cb-46a9-8b02-0534e3701a65.png',
-      title: 'Discover Perfect Properties'
+      title: 'Discover Perfect Properties For Your Family'
     },
     {
       id: '3',
       imageUrl: '/lovable-uploads/366c8ad9-d7e4-4dc0-9fc4-bf90bbd306da.png',
-      title: 'New Projects in Hinjewadi'
+      title: 'New Premium Projects in Hinjewadi Starting at ₹65 Lacs'
     },
     {
       id: '4',
       imageUrl: '/lovable-uploads/38d4ea24-24cb-46a9-8b02-0534e3701a65.png',
-      title: 'Premium Flats for Sale'
+      title: 'Luxury Flats in Prime Locations With Best Amenities'
     }
   ];
 
