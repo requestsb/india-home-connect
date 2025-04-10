@@ -21,7 +21,7 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
   const defaultBanners = [
     {
       id: '1',
-      imageUrl: '/lovable-uploads/38d4ea24-24cb-46a9-8b02-0534e3701a65.png',
+      imageUrl: '/lovable-uploads/366c8ad9-d7e4-4dc0-9fc4-bf90bbd306da.png',
       title: 'Find Your Dream Home'
     }
   ];

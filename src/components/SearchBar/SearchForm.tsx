@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, MapPin, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchTypeSelector from './SearchTypeSelector';
 import PropertyTypeSelector from './PropertyTypeSelector';
@@ -60,11 +60,8 @@ const SearchForm: React.FC = () => {
     navigate('/user/auth');
   };
 
-  // Show property type options only if location is selected
-  const showPropertyOptions = location && locality;
-
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className="grid grid-cols-1 gap-4">
       {/* Location selector always shown first */}
       <div className="col-span-1">
         <LocationSelector 
@@ -77,18 +74,44 @@ const SearchForm: React.FC = () => {
         />
       </div>
 
-      {/* Only show search type selector if location is selected */}
-      {showPropertyOptions && (
-        <div className="col-span-1">
-          <SearchTypeSelector 
-            value={searchType} 
-            onChange={(value) => setSearchType(value as SearchType)}
-          />
+      {/* Search Type Tabs */}
+      <div className="col-span-1 border-b border-gray-200">
+        <div className="flex space-x-6">
+          <button
+            className={`py-2 px-4 font-medium text-lg ${searchType === 'buy' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
+            onClick={() => setSearchType('buy')}
+          >
+            Buy
+          </button>
+          <button
+            className={`py-2 px-4 font-medium text-lg ${searchType === 'rent' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
+            onClick={() => setSearchType('rent')}
+          >
+            Rent
+          </button>
+          <button
+            className={`py-2 px-4 font-medium text-lg ${searchType === 'pg' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
+            onClick={() => setSearchType('pg')}
+          >
+            PG
+          </button>
+          <button
+            className={`py-2 px-4 font-medium text-lg ${searchType === 'commercial' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
+            onClick={() => setSearchType('commercial')}
+          >
+            Commercial
+          </button>
+          <button
+            className={`py-2 px-4 font-medium text-lg ${searchType === 'plot' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
+            onClick={() => setSearchType('plot')}
+          >
+            Plot
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* Show additional options only when location and locality are selected */}
-      {showPropertyOptions && (
+      {/* Property Search Options */}
+      {location && locality && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {searchType === 'commercial' && (
             <div>
@@ -147,13 +170,22 @@ const SearchForm: React.FC = () => {
         </div>
       )}
       
-      <div className="col-span-1 flex justify-center mt-2">
+      {/* Search Button */}
+      <div className="col-span-1 flex justify-between items-center mt-2">
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline"
+            size="icon"
+            className="rounded-full bg-white">
+            <Mic className="h-4 w-4 text-gray-500" />
+          </Button>
+        </div>
         <Button 
           onClick={handleSearch}
-          className="w-full sm:w-auto bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"
+          className="bg-brand-blue hover:bg-brand-darkBlue px-8 py-2"
         >
           <Search className="h-4 w-4 mr-2" />
-          Search Properties
+          Search
         </Button>
       </div>
     </div>
