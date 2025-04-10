@@ -8,7 +8,7 @@ import BannerSlider from './BannerSlider';
 const Hero: React.FC = () => {
   const navigate = useNavigate();
 
-  // Mock data for banner - in a real app, this would come from an API
+  // Mock data for banners - in a real app, this would come from an API
   const banners = [
     {
       id: '1',
@@ -19,6 +19,16 @@ const Hero: React.FC = () => {
       id: '2',
       imageUrl: '/lovable-uploads/38d4ea24-24cb-46a9-8b02-0534e3701a65.png',
       title: 'Discover Perfect Properties'
+    },
+    {
+      id: '3',
+      imageUrl: '/lovable-uploads/366c8ad9-d7e4-4dc0-9fc4-bf90bbd306da.png',
+      title: 'New Projects in Hinjewadi'
+    },
+    {
+      id: '4',
+      imageUrl: '/lovable-uploads/38d4ea24-24cb-46a9-8b02-0534e3701a65.png',
+      title: 'Premium Flats for Sale'
     }
   ];
 

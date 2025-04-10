@@ -30,7 +30,7 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
 
   return (
     <div className="relative w-full h-full">
-      <Carousel className="w-full">
+      <Carousel className="w-full" opts={{ loop: true, duration: 40 }}>
         <CarouselContent>
           {displayBanners.map((banner) => (
             <CarouselItem key={banner.id} className="relative">
@@ -41,6 +41,9 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/30 z-10"></div>
+                <div className="absolute bottom-10 left-10 z-20 text-white">
+                  <h2 className="text-3xl font-bold drop-shadow-lg">{banner.title}</h2>
+                </div>
               </div>
             </CarouselItem>
           ))}

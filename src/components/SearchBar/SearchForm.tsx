@@ -3,15 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import SearchTypeSelector from './SearchTypeSelector';
-import PropertyTypeSelector from './PropertyTypeSelector';
+import { 
+  SearchType, 
+  getPropertyTypeOptions, 
+  getBudgetOptions, 
+  getLocalities, 
+  SearchParams 
+} from './searchUtils';
 import LocationSelector from './LocationSelector';
+import PropertyTypeSelector from './PropertyTypeSelector';
 import BedroomSelector from './BedroomSelector';
 import BudgetSelector from './BudgetSelector';
 import AreaSelector from './AreaSelector';
 import GenderSelector from './GenderSelector';
 import CommercialPurposeSelector from './CommercialPurposeSelector';
-import { SearchType, getPropertyTypeOptions, getBudgetOptions, getLocalities, SearchParams } from './searchUtils';
 import { cities } from '@/components/supplier/data/propertyOptions';
 
 const SearchForm: React.FC = () => {
