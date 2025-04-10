@@ -39,9 +39,11 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
   return (
     <div className="relative w-full h-full">
       <Carousel className="w-full" 
-        opts={{ loop: true, duration: 50, startIndex: currentSlide }} 
-        value={currentSlide.toString()}
-        onValueChange={(value) => setCurrentSlide(parseInt(value))}>
+        opts={{ 
+          loop: true, 
+          duration: 50, 
+          startIndex: currentSlide 
+        }}>
         <CarouselContent>
           {displayBanners.map((banner) => (
             <CarouselItem key={banner.id} className="relative">
@@ -59,7 +61,6 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        {/* Navigation arrows removed */}
       </Carousel>
     </div>
   );
