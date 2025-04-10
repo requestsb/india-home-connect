@@ -66,6 +66,11 @@ const SearchForm: React.FC = () => {
     navigate('/user/auth');
   };
 
+  // Function to determine if we should show filters section
+  const shouldShowFilters = () => {
+    return location && locality;
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4">
       {/* Location selector always shown first */}
@@ -80,103 +85,105 @@ const SearchForm: React.FC = () => {
         />
       </div>
 
-      {/* Search Type Tabs */}
-      <div className="col-span-1">
-        <Tabs value={searchType} onValueChange={(value) => setSearchType(value as SearchType)} className="w-full">
-          <TabsList className="w-full bg-gray-100 p-0 h-auto rounded-lg mb-4">
-            <TabsTrigger 
-              value="buy" 
-              className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
-            >
-              Buy
-            </TabsTrigger>
-            <TabsTrigger 
-              value="rent" 
-              className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
-            >
-              Rent
-            </TabsTrigger>
-            <TabsTrigger 
-              value="pg" 
-              className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
-            >
-              PG
-            </TabsTrigger>
-            <TabsTrigger 
-              value="commercial" 
-              className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
-            >
-              Commercial
-            </TabsTrigger>
-            <TabsTrigger 
-              value="plot" 
-              className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
-            >
-              Plot
-            </TabsTrigger>
-          </TabsList>
+      {/* Only show search type tabs if a location is selected */}
+      {location && locality && (
+        <div className="col-span-1">
+          <Tabs value={searchType} onValueChange={(value) => setSearchType(value as SearchType)} className="w-full">
+            <TabsList className="w-full bg-gray-100 p-0 h-auto rounded-lg mb-4">
+              <TabsTrigger 
+                value="buy" 
+                className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
+              >
+                Buy
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rent" 
+                className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
+              >
+                Rent
+              </TabsTrigger>
+              <TabsTrigger 
+                value="pg" 
+                className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
+              >
+                PG
+              </TabsTrigger>
+              <TabsTrigger 
+                value="commercial" 
+                className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
+              >
+                Commercial
+              </TabsTrigger>
+              <TabsTrigger 
+                value="plot" 
+                className="flex-1 py-3 text-base data-[state=active]:bg-brand-blue data-[state=active]:text-white rounded-md"
+              >
+                Plot
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Property Search Options */}
-          {location && locality && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {searchType === 'commercial' && (
+            {/* Property Search Options */}
+            {shouldShowFilters() && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {searchType === 'commercial' && (
+                  <div>
+                    <CommercialPurposeSelector
+                      value={commercialType}
+                      onChange={setCommercialType}
+                    />
+                  </div>
+                )}
+
+                {searchType !== 'pg' && (
+                  <div>
+                    <PropertyTypeSelector 
+                      options={getPropertyTypeOptions(searchType)}
+                      value={propertyType}
+                      onChange={setPropertyType}
+                    />
+                  </div>
+                )}
+
+                {(searchType === 'buy' || searchType === 'rent') && 
+                (propertyType === 'flat' || propertyType === 'house') && (
+                  <div>
+                    <BedroomSelector 
+                      value={bedrooms} 
+                      onChange={setBedrooms}
+                    />
+                  </div>
+                )}
+
+                {searchType === 'pg' && (
+                  <div>
+                    <GenderSelector
+                      value={gender as 'male' | 'female' | 'any'}
+                      onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
+                    />
+                  </div>
+                )}
+
                 <div>
-                  <CommercialPurposeSelector
-                    value={commercialType}
-                    onChange={setCommercialType}
+                  <BudgetSelector 
+                    options={getBudgetOptions(searchType)}
+                    value={budget}
+                    onChange={setBudget}
                   />
                 </div>
-              )}
 
-              {searchType !== 'pg' && (
-                <div>
-                  <PropertyTypeSelector 
-                    options={getPropertyTypeOptions(searchType)}
-                    value={propertyType}
-                    onChange={setPropertyType}
-                  />
-                </div>
-              )}
-
-              {(searchType === 'buy' || searchType === 'rent') && 
-              (propertyType === 'flat' || propertyType === 'house') && (
-                <div>
-                  <BedroomSelector 
-                    value={bedrooms} 
-                    onChange={setBedrooms}
-                  />
-                </div>
-              )}
-
-              {searchType === 'pg' && (
-                <div>
-                  <GenderSelector
-                    value={gender as 'male' | 'female' | 'any'}
-                    onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
-                  />
-                </div>
-              )}
-
-              <div>
-                <BudgetSelector 
-                  options={getBudgetOptions(searchType)}
-                  value={budget}
-                  onChange={setBudget}
-                />
+                {searchType !== 'pg' && searchType !== 'rent' && (
+                  <div>
+                    <AreaSelector 
+                      value={area}
+                      onChange={setArea}
+                    />
+                  </div>
+                )}
               </div>
-
-              {searchType !== 'pg' && searchType !== 'rent' && (
-                <div>
-                  <AreaSelector 
-                    value={area}
-                    onChange={setArea}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </Tabs>
-      </div>
+            )}
+          </Tabs>
+        </div>
+      )}
       
       {/* Search Button */}
       <div className="col-span-1 flex justify-between items-center mt-2">

@@ -1,11 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 interface BannerProps {
@@ -27,10 +25,23 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
   ];
 
   const displayBanners = banners?.length ? banners : defaultBanners;
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    // Auto-rotate banners every 5 seconds
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % displayBanners.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [displayBanners.length]);
 
   return (
     <div className="relative w-full h-full">
-      <Carousel className="w-full" opts={{ loop: true, duration: 50 }}>
+      <Carousel className="w-full" 
+        opts={{ loop: true, duration: 50, startIndex: currentSlide }} 
+        value={currentSlide.toString()}
+        onValueChange={(value) => setCurrentSlide(parseInt(value))}>
         <CarouselContent>
           {displayBanners.map((banner) => (
             <CarouselItem key={banner.id} className="relative">
@@ -48,10 +59,7 @@ const BannerSlider: React.FC<BannerProps> = ({ banners }) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="absolute bottom-6 right-6 z-20 flex gap-2">
-          <CarouselPrevious className="bg-white/90 hover:bg-white border-none shadow-md" />
-          <CarouselNext className="bg-white/90 hover:bg-white border-none shadow-md" />
-        </div>
+        {/* Navigation arrows removed */}
       </Carousel>
     </div>
   );
