@@ -45,6 +45,8 @@ const SearchForm: React.FC = () => {
     setBedrooms('');
     setGender('');
     setCommercialType('');
+    setBudget('');
+    setArea('');
   }, [searchType]);
 
   const handleSearch = () => {
@@ -69,6 +71,131 @@ const SearchForm: React.FC = () => {
   // Function to determine if we should show filters section
   const shouldShowFilters = () => {
     return location && locality;
+  };
+
+  // Render different filter options based on search type
+  const renderSearchTypeFilters = () => {
+    switch(searchType) {
+      case 'buy':
+      case 'rent':
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div>
+              <PropertyTypeSelector 
+                options={getPropertyTypeOptions(searchType)}
+                value={propertyType}
+                onChange={setPropertyType}
+              />
+            </div>
+            
+            {(propertyType === 'flat' || propertyType === 'house') && (
+              <div>
+                <BedroomSelector 
+                  value={bedrooms} 
+                  onChange={setBedrooms}
+                />
+              </div>
+            )}
+            
+            <div>
+              <BudgetSelector 
+                options={getBudgetOptions(searchType)}
+                value={budget}
+                onChange={setBudget}
+              />
+            </div>
+            
+            {searchType === 'buy' && (
+              <div>
+                <AreaSelector 
+                  value={area}
+                  onChange={setArea}
+                />
+              </div>
+            )}
+          </div>
+        );
+        
+      case 'pg':
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div>
+              <GenderSelector
+                value={gender as 'male' | 'female' | 'any'}
+                onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
+              />
+            </div>
+            <div>
+              <BudgetSelector 
+                options={getBudgetOptions(searchType)}
+                value={budget}
+                onChange={setBudget}
+              />
+            </div>
+          </div>
+        );
+        
+      case 'commercial':
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div>
+              <CommercialPurposeSelector
+                value={commercialType}
+                onChange={setCommercialType}
+              />
+            </div>
+            <div>
+              <PropertyTypeSelector 
+                options={getPropertyTypeOptions(searchType)}
+                value={propertyType}
+                onChange={setPropertyType}
+              />
+            </div>
+            <div>
+              <BudgetSelector 
+                options={getBudgetOptions(searchType)}
+                value={budget}
+                onChange={setBudget}
+              />
+            </div>
+            <div>
+              <AreaSelector 
+                value={area}
+                onChange={setArea}
+              />
+            </div>
+          </div>
+        );
+        
+      case 'plot':
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div>
+              <PropertyTypeSelector 
+                options={getPropertyTypeOptions(searchType)}
+                value={propertyType}
+                onChange={setPropertyType}
+              />
+            </div>
+            <div>
+              <BudgetSelector 
+                options={getBudgetOptions(searchType)}
+                value={budget}
+                onChange={setBudget}
+              />
+            </div>
+            <div>
+              <AreaSelector 
+                value={area}
+                onChange={setArea}
+              />
+            </div>
+          </div>
+        );
+        
+      default:
+        return null;
+    }
   };
 
   return (
@@ -123,64 +250,7 @@ const SearchForm: React.FC = () => {
             </TabsList>
 
             {/* Property Search Options */}
-            {shouldShowFilters() && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {searchType === 'commercial' && (
-                  <div>
-                    <CommercialPurposeSelector
-                      value={commercialType}
-                      onChange={setCommercialType}
-                    />
-                  </div>
-                )}
-
-                {searchType !== 'pg' && (
-                  <div>
-                    <PropertyTypeSelector 
-                      options={getPropertyTypeOptions(searchType)}
-                      value={propertyType}
-                      onChange={setPropertyType}
-                    />
-                  </div>
-                )}
-
-                {(searchType === 'buy' || searchType === 'rent') && 
-                (propertyType === 'flat' || propertyType === 'house') && (
-                  <div>
-                    <BedroomSelector 
-                      value={bedrooms} 
-                      onChange={setBedrooms}
-                    />
-                  </div>
-                )}
-
-                {searchType === 'pg' && (
-                  <div>
-                    <GenderSelector
-                      value={gender as 'male' | 'female' | 'any'}
-                      onChange={(value) => setGender(value as 'male' | 'female' | 'any')}
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <BudgetSelector 
-                    options={getBudgetOptions(searchType)}
-                    value={budget}
-                    onChange={setBudget}
-                  />
-                </div>
-
-                {searchType !== 'pg' && searchType !== 'rent' && (
-                  <div>
-                    <AreaSelector 
-                      value={area}
-                      onChange={setArea}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+            {shouldShowFilters() && renderSearchTypeFilters()}
           </Tabs>
         </div>
       )}

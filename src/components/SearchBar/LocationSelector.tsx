@@ -43,7 +43,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
             </select>
           </div>
           
-          {location && localities.length > 0 && (
+          {location && (
             <div className="flex-1">
               <label className="text-xs text-gray-500 mb-1 block">Locality</label>
               <select 
